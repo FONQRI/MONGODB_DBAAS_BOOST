@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.12)
 
-project(IOTDB_Server_Boost)
+project(MONGODB_DBAAS_BOOST)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
