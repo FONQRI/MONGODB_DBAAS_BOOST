@@ -1,11 +1,19 @@
-#ifndef INSERT_ONE_CONTROLLER_H
-#define INSERT_ONE_CONTROLLER_H
+#ifndef CONTROLLER_INSERT_ONE_CONTROLLER_H
+#define CONTROLLER_INSERT_ONE_CONTROLLER_H
 
+#include "src/server/reply.hpp"
+#include "src/server/request.hpp"
 
-class insert_one_controller
-{
-public:
-	insert_one_controller();
+#include <string>
+namespace dbaas {
+namespace core {
+
+class insert_one_controller {
+  public:
+	insert_one_controller(http::server::reply &rep,
+			  http::server::request request);
 };
+}
+}
 
-#endif // INSERT_ONE_CONTROLLER_H
+#endif // CONTROLLER_INSERT_ONE_CONTROLLER_H

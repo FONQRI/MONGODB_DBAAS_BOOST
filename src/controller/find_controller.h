@@ -1,11 +1,17 @@
-#ifndef FIND_CONTROLLER_H
-#define FIND_CONTROLLER_H
+#ifndef CONTROLLER_FIND_CONTROLLER_H
+#define CONTROLLER_FIND_CONTROLLER_H
 
+#include "src/server/reply.hpp"
+#include "src/server/request.hpp"
+#include <string>
 
-class find_controller
-{
-public:
-	find_controller();
+namespace dbaas {
+namespace core {
+
+class find_controller {
+  public:
+	find_controller(http::server::reply &rep, http::server::request request);
 };
-
-#endif // FIND_CONTROLLER_H
+}
+}
+#endif // CONTROLLER_FIND_CONTROLLER_H

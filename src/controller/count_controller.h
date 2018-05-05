@@ -1,11 +1,17 @@
-#ifndef COUNT_CONTROLLER_H
-#define COUNT_CONTROLLER_H
+#ifndef CONTROLLER_COUNT_CONTROLLER_H
+#define CONTROLLER_COUNT_CONTROLLER_H
 
+#include "src/server/reply.hpp"
+#include "src/server/request.hpp"
+#include <string>
 
-class count_controller
-{
-public:
-	count_controller();
+namespace dbaas {
+namespace core {
+
+class count_controller {
+  public:
+	count_controller(http::server::reply &rep, http::server::request request);
 };
-
-#endif // COUNT_CONTROLLER_H
+}
+}
+#endif // CONTROLLER_COUNT_CONTROLLER_H

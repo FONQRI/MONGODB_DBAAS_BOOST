@@ -1,4 +1,4 @@
-#ifndef CONTROLLER_HANDLER_H
+#ifndef CONTROLLER_REQUEST_HANDLER_H
 #define CONTROLLER_REQUEST_HANDLER_H
 
 #include "src/server/reply.hpp"
@@ -6,7 +6,7 @@
 
 #include <string>
 
-namespace iotdb {
+namespace dbaas {
 namespace core {
 
 class handler {
