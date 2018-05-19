@@ -31,7 +31,7 @@ namespace database {
 * @param insert_document
 */
 std::string insert_one(std::string username, std::string database_name,
-			   std::string insert_document);
+			   bsoncxx::types::b_document insert_document);
 
 /**
 * @brief insert
@@ -40,8 +40,10 @@ std::string insert_one(std::string username, std::string database_name,
 * @param database_name
 * @param insert_document
 */
-std::string insert_many(std::string username, std::string database_name,
-			std::string insert_document);
+std::string
+insert_many(std::string username, std::string database_name,
+		std::vector<bsoncxx::document::value> insert_document_array,
+		bool ordered);
 /**
  * @brief find_one find one answer
  * @link https://docs.mongodb.com/manual/reference/method/db.collection.find/
@@ -51,11 +53,11 @@ std::string insert_many(std::string username, std::string database_name,
  * @return
  */
 std::string find_one(std::string username, std::string database_name,
-			 std::string query_document_json = "{}",
-			 std::string projection_document_json = "{}",
-			 std::string sort_document_json = "{}",
-			 std::string min_document_json = "{}",
-			 std::string max_document_json = "{}");
+			 bsoncxx::types::b_document query_document,
+			 bsoncxx::types::b_document projection_document,
+			 bsoncxx::types::b_document sort_document,
+			 bsoncxx::types::b_document min_document,
+			 bsoncxx::types::b_document max_document);
 /**
  * @brief find
  * @link https://docs.mongodb.com/manual/reference/method/db.collection.find/
@@ -65,11 +67,11 @@ std::string find_one(std::string username, std::string database_name,
  * @return
  */
 std::string find(std::string username, std::string database_name,
-		 std::string query_document_json = "{}",
-		 std::string projection_document_json = "{}",
-		 std::string sort_document_json = "{}",
-		 std::string min_document_json = "{}",
-		 std::string max_document_json = "{}",
+		 bsoncxx::types::b_document query_document,
+		 bsoncxx::types::b_document projection_document,
+		 bsoncxx::types::b_document sort_document,
+		 bsoncxx::types::b_document min_document,
+		 bsoncxx::types::b_document max_document,
 		 size_t limit_number_of_docs = 0);
 
 /**
@@ -81,7 +83,7 @@ std::string find(std::string username, std::string database_name,
  * @return
  */
 std::string count(std::string username, std::string database_name,
-		  std::string query_document_json = "{}",
+		  bsoncxx::types::b_document query_document,
 		  size_t limit_number_of_docs = 0,
 		  size_t skip_number_of_docs = 0);
 }

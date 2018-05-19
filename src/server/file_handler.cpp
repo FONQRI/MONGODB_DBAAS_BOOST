@@ -73,11 +73,14 @@ void request_handler::operator()(const request &req, reply &rep)
 	//	while (is.read(buf, sizeof(buf)).gcount() > 0)
 	//	rep.content.append(buf, is.gcount());
 
-	rep.headers.resize(2);
-	rep.headers[0].name = "Content-Length";
-	rep.headers[0].value = boost::lexical_cast<std::string>(rep.content.size());
-	rep.headers[1].name = "Content-Type";
-	rep.headers[1].value = mime_types::extension_to_type(extension);
+	if (rep.headers.size() < 2) {
+		rep.headers.resize(2);
+		rep.headers[0].name = "Content-Length";
+		rep.headers[0].value =
+		boost::lexical_cast<std::string>(rep.content.size());
+		rep.headers[1].name = "Content-Type";
+		rep.headers[1].value = mime_types::extension_to_type(extension);
+	}
 }
 
 bool request_handler::url_decode(const std::string &in, std::string &out)

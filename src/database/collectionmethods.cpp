@@ -3,9 +3,9 @@
 #include "reply.h"
 #include <iostream>
 // TODO [3] use costume uri (real server and backups)
-std::string dbaas::database::insert_one(std::string username,
-					std::string database_name,
-					std::string insert_document)
+std::string
+dbaas::database::insert_one(std::string username, std::string database_name,
+				bsoncxx::types::b_document insert_document)
 {
 	// create connection
 	mongocxx::client connection{mongocxx::uri{}};
@@ -14,21 +14,18 @@ std::string dbaas::database::insert_one(std::string username,
 
 	try {
 
-		bsoncxx::document::value document =
-		bsoncxx::from_json(insert_document);
-
-		collection.insert_one(document.view());
+		collection.insert_one(insert_document.view());
+		return dbaas::database::reply::answer_done();
 	}
 	catch (std::exception &e) {
 		// make error json
 		return reply::error(e.what());
 	}
-	return dbaas::database::reply::answer_done();
 }
 
-std::string dbaas::database::insert_many(std::string username,
-					 std::string database_name,
-					 std::string insert_document)
+std::string dbaas::database::insert_many(
+	std::string username, std::string database_name,
+	std::vector<bsoncxx::document::value> insert_document_array, bool ordered)
 {
 	// create connection
 	mongocxx::client connection{mongocxx::uri{}};
@@ -36,28 +33,25 @@ std::string dbaas::database::insert_many(std::string username,
 	auto collection = connection[username][database_name];
 
 	try {
+		mongocxx::options::insert options;
 
-		bsoncxx::document::value document =
-		bsoncxx::from_json(insert_document);
-
-		// BUG use a vector for arg in insert_many
-		// TODO [1]uncomment below line
-		// collection.insert_many(document.view());
+		options.ordered(ordered);
+		collection.insert_many(insert_document_array, options);
+		return dbaas::database::reply::answer_done();
 	}
 	catch (std::exception &e) {
 		// make error json
 		return reply::error(e.what());
 	}
-	return dbaas::database::reply::answer_done();
 }
 
-std::string dbaas::database::find_one(std::string username,
-					  std::string database_name,
-					  std::string query_document_json,
-					  std::string projection_document_json,
-					  std::string sort_document_json,
-					  std::string min_document_json,
-					  std::string max_document_json)
+std::string
+dbaas::database::find_one(std::string username, std::string database_name,
+			  bsoncxx::types::b_document query_document,
+			  bsoncxx::types::b_document projection_document,
+			  bsoncxx::types::b_document sort_document,
+			  bsoncxx::types::b_document min_document,
+			  bsoncxx::types::b_document max_document)
 {
 
 	// create connection
@@ -67,26 +61,6 @@ std::string dbaas::database::find_one(std::string username,
 	auto collection = connection[username][database_name];
 	try {
 
-		// create query document from json
-		bsoncxx::document::value document =
-		bsoncxx::from_json(query_document_json);
-
-		// create projection document from json
-		bsoncxx::document::value projection_document =
-		bsoncxx::from_json(projection_document_json);
-
-		// create sort document from json
-		bsoncxx::document::value sort_document =
-		bsoncxx::from_json(sort_document_json);
-
-		// create min document from json
-		bsoncxx::document::value min_document =
-		bsoncxx::from_json(min_document_json);
-
-		// create max document from json
-		bsoncxx::document::value max_document =
-		bsoncxx::from_json(max_document_json);
-
 		// create option
 		mongocxx::options::find options = mongocxx::options::find{};
 		options.projection(projection_document.view());
@@ -95,7 +69,7 @@ std::string dbaas::database::find_one(std::string username,
 		options.max(max_document.view());
 
 		// create cursor bu qyery and options
-		auto cursor = collection.find_one({document}, options);
+		auto cursor = collection.find_one({query_document}, options);
 
 		// create json string from response
 		std::string reply = bsoncxx::to_json(cursor.value());
@@ -110,11 +84,14 @@ std::string dbaas::database::find_one(std::string username,
 	}
 }
 
-std::string dbaas::database::find(
-	std::string username, std::string database_name,
-	std::string query_document_json, std::string projection_document_json,
-	std::string sort_document_json, std::string min_document_json,
-	std::string max_document_json, size_t limit_number_of_docs)
+std::string
+dbaas::database::find(std::string username, std::string database_name,
+			  bsoncxx::types::b_document query_document,
+			  bsoncxx::types::b_document projection_document,
+			  bsoncxx::types::b_document sort_document,
+			  bsoncxx::types::b_document min_document,
+			  bsoncxx::types::b_document max_document,
+			  size_t limit_number_of_docs)
 {
 	// create connection
 	mongocxx::client connection{mongocxx::uri{}};
@@ -122,24 +99,6 @@ std::string dbaas::database::find(
 	// create xollection
 	auto collection = connection[username][database_name];
 	try {
-		bsoncxx::document::value document =
-		bsoncxx::from_json(query_document_json);
-
-		// create projection document from json
-		bsoncxx::document::value projection_document =
-		bsoncxx::from_json(projection_document_json);
-
-		// create sort document from json
-		bsoncxx::document::value sort_document =
-		bsoncxx::from_json(sort_document_json);
-
-		// create min document from json
-		bsoncxx::document::value min_document =
-		bsoncxx::from_json(min_document_json);
-
-		// create max document from json
-		bsoncxx::document::value max_document =
-		bsoncxx::from_json(max_document_json);
 
 		// create option
 		mongocxx::options::find options = mongocxx::options::find{};
@@ -153,15 +112,17 @@ std::string dbaas::database::find(
 			options.limit(limit_number_of_docs);
 		}
 
-		auto cursor = collection.find({document}, options);
+		auto cursor = collection.find({query_document}, options);
 		std::string reply{};
-		reply.append("{[");
+		reply.append("[");
 		for (auto &&doc : cursor) {
-			//			std::cout << bsoncxx::to_json(doc) <<
-			// std::endl;
 			reply.append(bsoncxx::to_json(doc) + ",");
 		}
-		reply.append("]}");
+
+		// remove final "," character
+		reply.erase(reply.size() - 1, 1);
+
+		reply.append("]");
 
 		// make reply json
 		return dbaas::database::reply::answer(reply);
@@ -174,7 +135,7 @@ std::string dbaas::database::find(
 
 std::string dbaas::database::count(std::string username,
 				   std::string database_name,
-				   std::string query_document_json,
+				   bsoncxx::types::b_document query_document,
 				   size_t limit_number_of_docs,
 				   size_t skip_number_of_docs)
 {
@@ -185,8 +146,6 @@ std::string dbaas::database::count(std::string username,
 	auto collection = connection[username][database_name];
 
 	try {
-		bsoncxx::document::value document =
-		bsoncxx::from_json(query_document_json);
 
 		// create option
 		mongocxx::options::count options = mongocxx::options::count{};
@@ -201,7 +160,7 @@ std::string dbaas::database::count(std::string username,
 			options.skip(skip_number_of_docs);
 		}
 
-		auto cursor = collection.count({document}, options);
+		auto cursor = collection.count({query_document}, options);
 		std::string reply{};
 
 		// make reply json

@@ -14,10 +14,13 @@
 #include <mongocxx/stdx.hpp>
 #include <mongocxx/uri.hpp>
 
+// TODO remove test code
+#include "src/database/password.h"
+
 int main(int argc, char *argv[])
 {
 	mongocxx::instance inst{};
-
+	dbaas::database::password::create_key("dbname");
 	// NOTE MONGODB usage example
 	// mongocxx::instance inst{};
 	//	mongocxx::client conn{mongocxx::uri{}};
