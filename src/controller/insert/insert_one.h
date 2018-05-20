@@ -8,11 +8,7 @@
 namespace dbaas {
 namespace core {
 
-class insert_one_controller {
-  public:
-	insert_one_controller(http::server::reply &rep,
-			  http::server::request request);
-};
+void insert_one(http::server::reply &rep, http::server::request request);
 }
 }
 

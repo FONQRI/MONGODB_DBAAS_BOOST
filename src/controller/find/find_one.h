@@ -8,11 +8,7 @@
 namespace dbaas {
 namespace core {
 
-class find_one_controller {
-  public:
-	find_one_controller(http::server::reply &rep,
-			http::server::request request);
-};
+void find_one(http::server::reply &rep, http::server::request request);
 }
 }
 #endif // CONTROLLER_FIND_ONE_CONTROLLER_H
