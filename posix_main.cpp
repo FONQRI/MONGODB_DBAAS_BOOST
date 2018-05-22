@@ -33,6 +33,7 @@
 // TODO [4] handle post and get request for all controllers
 // TODO [4] handle bad json content and add exeption in all controllers
 // TODO [4] add header for add controllers
+// TODO [4] mapping system for controllers
 
 typedef void controller(http::server::reply &rep,
 			http::server::request request);

@@ -13,8 +13,14 @@
 
 namespace dbaas {
 namespace core {
-
+/**
+* @brief delete_one	: gets request content json and prepare it for
+* delete_one function in database namespace
+* @param rep			: reply of http
+* @param request		: request of http
+*/
 void delete_one(http::server::reply &rep, http::server::request request);
-}
-}
+} // dbaas
+} // core
+
 #endif // CONTROLLER_DELETE_ONE_H

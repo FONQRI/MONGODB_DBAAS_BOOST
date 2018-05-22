@@ -8,9 +8,15 @@
 
 namespace dbaas {
 namespace core {
-
+/**
+* @brief delete_many	: gets request content json and prepare it for
+* delete_many function in database namespace
+* @param rep			: reply of http
+* @param request		: request of http
+*/
 void delete_many(http::server::reply &rep, http::server::request request);
-}
-}
+
+} // dbaas
+} // core
 
 #endif // CONTROLLER_DELETE_MANY_H

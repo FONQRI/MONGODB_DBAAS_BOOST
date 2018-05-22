@@ -7,8 +7,13 @@
 
 namespace dbaas {
 namespace core {
-
+/**
+* @brief find_one	: gets request content json and prepare it for
+* find_one function in database namespace
+* @param rep			: reply of http
+* @param request		: request of http
+*/
 void find_one(http::server::reply &rep, http::server::request request);
-}
-}
+} // dbaas
+} // core
 #endif // CONTROLLER_FIND_ONE_CONTROLLER_H
