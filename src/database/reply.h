@@ -22,6 +22,21 @@ namespace reply {
 std::string error(std::string what);
 
 /**
+ * @brief enter_item_error	: create error reply json for missing item in
+ * query
+ * @param item_name			: missing item name
+ * @return					: json of reply
+ */
+std::string missing_item_error(std::string item_name);
+
+/**
+ * @brief wrong_item_type	: create error reply json for wrong item in
+ * query
+ * @param item_name			: missing item name
+ * @return					: json of reply
+ */
+std::string wrong_item_type(std::string item_name);
+/**
  * @brief answer	: create answer reply json
  * @param answer	: answer message
  * @return			: json of reply

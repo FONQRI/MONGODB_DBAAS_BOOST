@@ -33,31 +33,150 @@ void dbaas::core::count(http::server::reply &rep, http::server::request request)
 			bsoncxx::from_json(request.content);
 
 			// get username of request
-			std::string username = request_document.view()["username"]
-						   .get_utf8()
-						   .value.to_string();
+
+			std::string username;
+			try {
+				username = request_document.view()["username"]
+					   .get_utf8()
+					   .value.to_string();
+			}
+			catch (std::exception &e) {
+
+				// if element doesn't exist in request document
+				if (strcmp(e.what(),
+					   "unset document::element") == 0) {
+					std::string reply = dbaas::database::reply::
+					missing_item_error("username");
+					rep.content.append(reply.c_str(),
+							   reply.size());
+				} // check if element type is wrong
+				else if (strcmp(e.what(),
+						"expected element "
+						"type k_document") == 0) {
+					std::string reply =
+					dbaas::database::reply::wrong_item_type(
+						"username");
+					rep.content.append(reply.c_str(),
+							   reply.size());
+				}
+				return;
+			}
 
 			// get client key of request
-			std::string client_key =
-			request_document.view()["client_key"]
-				.get_utf8()
-				.value.to_string();
+			std::string client_key;
+			try {
+				client_key = request_document.view()["client_key"]
+						 .get_utf8()
+						 .value.to_string();
+			}
+			catch (std::exception &e) {
+
+				// if element doesn't exist in request document
+				if (strcmp(e.what(),
+					   "unset document::element") == 0) {
+					std::string reply = dbaas::database::reply::
+					missing_item_error("client_key");
+					rep.content.append(reply.c_str(),
+							   reply.size());
+				} // check if element type is wrong
+				else if (strcmp(e.what(),
+						"expected element "
+						"type k_document") == 0) {
+					std::string reply =
+					dbaas::database::reply::wrong_item_type(
+						"client_key");
+					rep.content.append(reply.c_str(),
+							   reply.size());
+				}
+				return;
+			}
 
 			// get query document of request
-			bsoncxx::types::b_document query_document =
-			request_document.view()["query"].get_document();
+			bsoncxx::types::b_document query;
+
+			try {
+				query =
+				request_document.view()["query"].get_document();
+			}
+			catch (std::exception &e) {
+
+				// if element doesn't exist in request document
+				if (strcmp(e.what(),
+					   "unset document::element") == 0) {
+					std::string reply = dbaas::database::reply::
+					missing_item_error("query");
+					rep.content.append(reply.c_str(),
+							   reply.size());
+				} // check if element type is wrong
+				else if (strcmp(e.what(),
+						"expected element "
+						"type k_document") == 0) {
+					std::string reply =
+					dbaas::database::reply::wrong_item_type(
+						"query");
+					rep.content.append(reply.c_str(),
+							   reply.size());
+				}
+				return;
+			}
 
 			// get limit from request document
-			size_t limit = request_document.view()["limit"].get_int32();
+			size_t limit_number;
+
+			try {
+				limit_number =
+				request_document.view()["limit_number"]
+					.get_int32();
+			}
+			catch (std::exception &e) {
+
+				// if element doesn't exist in request document
+				if (strcmp(e.what(),
+					   "unset document::element") == 0) {
+					// element is optional
+				} // check if element type is wrong
+				else if (strcmp(e.what(),
+						"expected element "
+						"type k_document") == 0) {
+					std::string reply =
+					dbaas::database::reply::wrong_item_type(
+						"limit_number");
+					rep.content.append(reply.c_str(),
+							   reply.size());
+					return;
+				}
+			}
 
 			// get skip from request document
-			size_t skip = request_document.view()["skip"].get_int32();
+			size_t skip;
+
+			try {
+				skip = request_document.view()["skip"].get_int32();
+			}
+			catch (std::exception &e) {
+
+				// if element doesn't exist in request document
+				if (strcmp(e.what(),
+					   "unset document::element") == 0) {
+					// element is optional
+				} // check if element type is wrong
+				else if (strcmp(e.what(),
+						"expected element "
+						"type k_document") == 0) {
+					std::string reply =
+					dbaas::database::reply::wrong_item_type(
+						"skip");
+					rep.content.append(reply.c_str(),
+							   reply.size());
+					return;
+				}
+			}
 
 			// get reply from database
 			std::string reply = dbaas::database::count(
 			username,
-			dbaas::database::password::check_key(client_key),
-			query_document, limit, skip);
+			dbaas::database::password::check_key(client_key), query,
+			limit_number, skip);
 
 			// write reply
 			rep.content.append(reply.c_str(), reply.size());

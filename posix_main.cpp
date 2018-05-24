@@ -30,15 +30,22 @@
 #include "src/controller/update/update_many.h"
 #include "src/controller/update/update_one.h"
 
-// TODO [4] handle post and get request for all controllers
-// TODO [4] handle bad json content and add exeption in all controllers
-// TODO [4] add header for add controllers
-// TODO [4] mapping system for controllers
-
+/**
+ * @brief controller	: a function for controller mapping
+ * @param rep			: reply of http
+ * @param request		: request of http
+ */
 typedef void controller(http::server::reply &rep,
 			http::server::request request);
+
+/**
+ * @brief function_mapper : controller mapper type
+ */
 typedef std::map<std::string, controller *> function_mapper;
 
+/**
+ * @brief controller_mapper
+ */
 function_mapper controller_mapper;
 
 int main(int argc, char *argv[])
@@ -60,26 +67,6 @@ int main(int argc, char *argv[])
 
 	mongocxx::instance inst{};
 	dbaas::database::password::create_key("dbname");
-
-	// NOTE MONGODB usage example
-	// mongocxx::instance inst{};
-	//	mongocxx::client conn{mongocxx::uri{}};
-
-	//	bsoncxx::builder::stream::document document{};
-
-	//	auto collection = conn["testdb"]["testcollection"];
-	//	document << "hello"
-	//		 << "world";
-
-	//	collection.insert_one(document.view());
-	//	auto cursor = collection.find({});
-
-	//	for (auto &&doc : cursor) {
-	//		std::cout << bsoncxx::to_json(doc) << std::endl;
-	//	}
-
-	// NOTE exampel of usage from_json
-	//	bsoncxx::document::value document1 = bsoncxx::from_json("{}");
 
 	try {
 		// Check command line arguments.

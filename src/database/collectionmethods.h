@@ -239,7 +239,9 @@ std::string count(std::string username, std::string database_name,
 std::string
 insert_many(std::string username, std::string database_name,
 		std::vector<bsoncxx::document::value> insert_document_array,
-		bool ordered);
+		std::string acknowledge_level, std::string tag, bool journal,
+		int majority, int timeout, int nodes, bool ordered,
+		bool bypass_document_validation);
 
 /**
 * @brief insert_one			: <a
@@ -251,7 +253,10 @@ insert_many(std::string username, std::string database_name,
 * @return answer reply
 */
 std::string insert_one(std::string username, std::string database_name,
-			   bsoncxx::types::b_document insert_document);
+			   bsoncxx::types::b_document insert_document,
+			   std::string acknowledge_level, std::string tag,
+			   bool journal, int majority, int timeout, int nodes,
+			   bool ordered, bool bypass_document_validation);
 
 /**
  * @brief find_one_and_replace	: <a

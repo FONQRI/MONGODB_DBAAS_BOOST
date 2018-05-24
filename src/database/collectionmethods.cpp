@@ -274,6 +274,7 @@ dbaas::database::find_one(std::string username, std::string database_name,
 {
 
 	// create connection
+
 	mongocxx::client connection{mongocxx::uri{}};
 
 	// create xollection
@@ -297,7 +298,6 @@ dbaas::database::find_one(std::string username, std::string database_name,
 		return dbaas::database::reply::answer(reply);
 	}
 	catch (std::exception &e) {
-
 		// create json from error
 		return reply::error(e.what());
 	}
@@ -344,7 +344,9 @@ std::string dbaas::database::count(std::string username,
 
 std::string dbaas::database::insert_many(
 	std::string username, std::string database_name,
-	std::vector<bsoncxx::document::value> insert_document_array, bool ordered)
+	std::vector<bsoncxx::document::value> insert_document_array,
+	std::string acknowledge_level, std::string tag, bool journal, int majority,
+	int timeout, int nodes, bool ordered, bool bypass_document_validation)
 {
 	// create connection
 	mongocxx::client connection{mongocxx::uri{}};
@@ -355,6 +357,44 @@ std::string dbaas::database::insert_many(
 		mongocxx::options::insert options;
 
 		options.ordered(ordered);
+
+		// create write_concern
+		// https://docs.mongodb.com/manual/reference/glossary/#term-write-concern
+		mongocxx::write_concern write_concern = mongocxx::write_concern();
+
+		write_concern.journal(journal);
+		write_concern.majority(std::chrono::milliseconds(majority));
+		write_concern.timeout(std::chrono::milliseconds(timeout));
+		write_concern.nodes(nodes);
+		write_concern.tag(mongocxx::stdx::string_view(tag));
+
+		if (acknowledge_level == "k_acknowledged") {
+			write_concern.acknowledge_level(
+			mongocxx::write_concern::level::k_acknowledged);
+		}
+		else if (acknowledge_level == "k_default") {
+			write_concern.acknowledge_level(
+			mongocxx::write_concern::level::k_acknowledged);
+		}
+		else if (acknowledge_level == "k_majority") {
+			write_concern.acknowledge_level(
+			mongocxx::write_concern::level::k_majority);
+		}
+		else if (acknowledge_level == "k_tag") {
+			write_concern.acknowledge_level(
+			mongocxx::write_concern::level::k_tag);
+		}
+		else if (acknowledge_level == "k_unacknowledged") {
+			write_concern.acknowledge_level(
+			mongocxx::write_concern::level::k_unacknowledged);
+		}
+
+		// add created write_concern to options
+		options.write_concern(write_concern);
+
+		// add bypass_document_validation to options
+		options.bypass_document_validation(bypass_document_validation);
+
 		collection.insert_many(insert_document_array, options);
 		return dbaas::database::reply::answer_done();
 	}
@@ -366,7 +406,10 @@ std::string dbaas::database::insert_many(
 
 std::string
 dbaas::database::insert_one(std::string username, std::string database_name,
-				bsoncxx::types::b_document insert_document)
+				bsoncxx::types::b_document insert_document,
+				std::string acknowledge_level, std::string tag,
+				bool journal, int majority, int timeout, int nodes,
+				bool ordered, bool bypass_document_validation)
 {
 	// create connection
 	mongocxx::client connection{mongocxx::uri{}};
@@ -374,8 +417,48 @@ dbaas::database::insert_one(std::string username, std::string database_name,
 	auto collection = connection[username][database_name];
 
 	try {
+		mongocxx::options::insert options;
 
-		collection.insert_one(insert_document.view());
+		options.ordered(ordered);
+
+		// create write_concern
+		// https://docs.mongodb.com/manual/reference/glossary/#term-write-concern
+		mongocxx::write_concern write_concern = mongocxx::write_concern();
+
+		write_concern.journal(journal);
+		write_concern.majority(std::chrono::milliseconds(majority));
+		write_concern.timeout(std::chrono::milliseconds(timeout));
+		write_concern.nodes(nodes);
+		write_concern.tag(mongocxx::stdx::string_view(tag));
+
+		if (acknowledge_level == "k_acknowledged") {
+			write_concern.acknowledge_level(
+			mongocxx::write_concern::level::k_acknowledged);
+		}
+		else if (acknowledge_level == "k_default") {
+			write_concern.acknowledge_level(
+			mongocxx::write_concern::level::k_acknowledged);
+		}
+		else if (acknowledge_level == "k_majority") {
+			write_concern.acknowledge_level(
+			mongocxx::write_concern::level::k_majority);
+		}
+		else if (acknowledge_level == "k_tag") {
+			write_concern.acknowledge_level(
+			mongocxx::write_concern::level::k_tag);
+		}
+		else if (acknowledge_level == "k_unacknowledged") {
+			write_concern.acknowledge_level(
+			mongocxx::write_concern::level::k_unacknowledged);
+		}
+
+		// add created write_concern to options
+		options.write_concern(write_concern);
+
+		// add bypass_document_validation to options
+		options.bypass_document_validation(bypass_document_validation);
+
+		collection.insert_one(insert_document.view(), options);
 		return dbaas::database::reply::answer_done();
 	}
 	catch (std::exception &e) {
