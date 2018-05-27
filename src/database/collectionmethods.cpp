@@ -5,6 +5,7 @@
 #include <chrono>
 #include <iostream>
 
+#include <iterator>
 // TODO [3] use costume uri (real server and backups)
 
 std::string
@@ -245,13 +246,16 @@ dbaas::database::find(std::string username, std::string database_name,
 
 		auto cursor = collection.find({query_document}, options);
 		std::string reply{};
+
 		reply.append("[");
 		for (auto &&doc : cursor) {
 			reply.append(bsoncxx::to_json(doc) + ",");
 		}
 
-		// remove final "," character
-		reply.erase(reply.size() - 1, 1);
+		// remove final "," character if ther is any element
+		if (reply.size() > 2) {
+			reply.erase(reply.size() - 1, 1);
+		}
 
 		reply.append("]");
 

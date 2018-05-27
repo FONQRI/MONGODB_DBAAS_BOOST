@@ -29,68 +29,38 @@ void dbaas::core::insert_one(http::server::reply &rep,
 		// check if request is post
 		if (request.method == "POST") {
 
+			// get username of request
+			std::string username{""};
+			// get client key of request
+			std::string client_key{""};
+			for (auto &header : request.headers) {
+				if (strcmp(header.name.c_str(), "username") ==
+					0) {
+					username = header.value;
+				}
+				else if (strcmp(header.name.c_str(),
+						"client_key") == 0) {
+					client_key = header.value;
+				}
+			}
+			if (username.empty()) {
+				std::string reply =
+				dbaas::database::reply::missing_item_error(
+					"username");
+				rep.content.append(reply.c_str(), reply.size());
+				return;
+			}
+			else if (client_key.empty()) {
+				std::string reply =
+				dbaas::database::reply::missing_item_error(
+					"client_key");
+				rep.content.append(reply.c_str(), reply.size());
+				return;
+			}
+
 			// convert content to json
 			bsoncxx::document::value request_document =
 			bsoncxx::from_json(request.content);
-
-			// get username of request
-
-			std::string username;
-			try {
-				username = request_document.view()["username"]
-					   .get_utf8()
-					   .value.to_string();
-			}
-			catch (std::exception &e) {
-
-				// if element doesn't exist in request document
-				if (strcmp(e.what(),
-					   "unset document::element") == 0) {
-					std::string reply = dbaas::database::reply::
-					missing_item_error("username");
-					rep.content.append(reply.c_str(),
-							   reply.size());
-				} // check if element type is wrong
-				else if (strcmp(e.what(),
-						"expected element "
-						"type k_document") == 0) {
-					std::string reply =
-					dbaas::database::reply::wrong_item_type(
-						"username");
-					rep.content.append(reply.c_str(),
-							   reply.size());
-				}
-				return;
-			}
-
-			// get client key of request
-			std::string client_key;
-			try {
-				client_key = request_document.view()["client_key"]
-						 .get_utf8()
-						 .value.to_string();
-			}
-			catch (std::exception &e) {
-
-				// if element doesn't exist in request document
-				if (strcmp(e.what(),
-					   "unset document::element") == 0) {
-					std::string reply = dbaas::database::reply::
-					missing_item_error("client_key");
-					rep.content.append(reply.c_str(),
-							   reply.size());
-				} // check if element type is wrong
-				else if (strcmp(e.what(),
-						"expected element "
-						"type k_document") == 0) {
-					std::string reply =
-					dbaas::database::reply::wrong_item_type(
-						"client_key");
-					rep.content.append(reply.c_str(),
-							   reply.size());
-				}
-				return;
-			}
 
 			// get query document of request
 			bsoncxx::types::b_document query;
