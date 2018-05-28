@@ -17,6 +17,8 @@
 #include <mongocxx/stdx.hpp>
 #include <mongocxx/uri.hpp>
 
+#include <boost/optional.hpp>
+
 namespace dbaas {
 namespace database {
 
@@ -55,9 +57,13 @@ namespace database {
  */
 std::string delete_many(std::string username, std::string database_name,
 			bsoncxx::types::b_document query_document,
-			bsoncxx::types::b_document collation,
-			std::string acknowledge_level, std::string tag,
-			bool journal, int majority, int timeout, int nodes);
+			boost::optional<bsoncxx::types::b_document> collation,
+			boost::optional<std::string> acknowledge_level,
+			boost::optional<std::string> tag,
+			boost::optional<bool> journal,
+			boost::optional<int> majority,
+			boost::optional<int> timeout,
+			boost::optional<int> nodes);
 
 /**
  * @brief delete_one		: <a
@@ -94,9 +100,13 @@ std::string delete_many(std::string username, std::string database_name,
  */
 std::string delete_one(std::string username, std::string database_name,
 			   bsoncxx::types::b_document query_document,
-			   bsoncxx::types::b_document collation,
-			   std::string acknowledge_level, std::string tag,
-			   bool journal, int majority, int timeout, int nodes);
+			   boost::optional<bsoncxx::types::b_document> collation,
+			   boost::optional<std::string> acknowledge_level,
+			   boost::optional<std::string> tag,
+			   boost::optional<bool> journal,
+			   boost::optional<int> majority,
+			   boost::optional<int> timeout,
+			   boost::optional<int> nodes);
 
 /**
  * @brief find_one_and_delete	: <a href =
@@ -139,14 +149,16 @@ std::string delete_one(std::string username, std::string database_name,
  * or this one for errors
  * :"{"isSuccessful":false,"Message":" + what happened + "}"
  */
-std::string find_one_and_delete(std::string username, std::string database_name,
-				bsoncxx::types::b_document query_document,
-				bsoncxx::types::b_document projection_document,
-				bsoncxx::types::b_document sort_document,
-				bsoncxx::types::b_document collation,
-				std::string acknowledge_level, std::string tag,
-				bool journal, int majority, int timeout,
-				int nodes, int max_time);
+std::string find_one_and_delete(
+	std::string username, std::string database_name,
+	bsoncxx::types::b_document query_document,
+	boost::optional<bsoncxx::types::b_document> projection_document,
+	boost::optional<bsoncxx::types::b_document> sort_document,
+	boost::optional<bsoncxx::types::b_document> collation,
+	boost::optional<std::string> acknowledge_level,
+	boost::optional<std::string> tag, boost::optional<bool> journal,
+	boost::optional<int> majority, boost::optional<int> timeout,
+	boost::optional<int> nodes, boost::optional<int> max_time);
 
 /**
  * @brief find					: <a href =
@@ -170,13 +182,14 @@ std::string find_one_and_delete(std::string username, std::string database_name,
  * or this one for errors
  * :"{"isSuccessful":false,"Message":" + what happened + "}"
  */
-std::string find(std::string username, std::string database_name,
-		 bsoncxx::types::b_document query_document,
-		 bsoncxx::types::b_document projection_document,
-		 bsoncxx::types::b_document sort_document,
-		 bsoncxx::types::b_document min_document,
-		 bsoncxx::types::b_document max_document,
-		 size_t limit_number_of_docs = 0);
+std::string
+find(std::string username, std::string database_name,
+	 bsoncxx::types::b_document query_document,
+	 boost::optional<bsoncxx::types::b_document> projection_document,
+	 boost::optional<bsoncxx::types::b_document> sort_document,
+	 boost::optional<bsoncxx::types::b_document> min_document,
+	 boost::optional<bsoncxx::types::b_document> max_document,
+	 boost::optional<size_t> limit_number_of_docs = 0);
 
 /**
  * @brief find_one				:<a
@@ -199,12 +212,13 @@ std::string find(std::string username, std::string database_name,
  * or this one for errors
  * :"{"isSuccessful":false,"Message":" + what happened + "}"
  */
-std::string find_one(std::string username, std::string database_name,
-			 bsoncxx::types::b_document query_document,
-			 bsoncxx::types::b_document projection_document,
-			 bsoncxx::types::b_document sort_document,
-			 bsoncxx::types::b_document min_document,
-			 bsoncxx::types::b_document max_document);
+std::string
+find_one(std::string username, std::string database_name,
+	 bsoncxx::types::b_document query_document,
+	 boost::optional<bsoncxx::types::b_document> projection_document,
+	 boost::optional<bsoncxx::types::b_document> sort_document,
+	 boost::optional<bsoncxx::types::b_document> min_document,
+	 boost::optional<bsoncxx::types::b_document> max_document);
 
 /**
  * @brief count					: <a
@@ -222,8 +236,8 @@ std::string find_one(std::string username, std::string database_name,
  */
 std::string count(std::string username, std::string database_name,
 		  bsoncxx::types::b_document query_document,
-		  size_t limit_number_of_docs = 0,
-		  size_t skip_number_of_docs = 0);
+		  boost::optional<size_t> limit_number_of_docs = 0,
+		  boost::optional<size_t> skip_number_of_docs = 0);
 
 /**
  * @brief insert_many	: <a
@@ -239,9 +253,11 @@ std::string count(std::string username, std::string database_name,
 std::string
 insert_many(std::string username, std::string database_name,
 		std::vector<bsoncxx::document::value> insert_document_array,
-		std::string acknowledge_level, std::string tag, bool journal,
-		int majority, int timeout, int nodes, bool ordered,
-		bool bypass_document_validation);
+		boost::optional<std::string> acknowledge_level,
+		boost::optional<std::string> tag, boost::optional<bool> journal,
+		boost::optional<int> majority, boost::optional<int> timeout,
+		boost::optional<int> nodes, boost::optional<bool> ordered,
+		boost::optional<bool> bypass_document_validation);
 
 /**
 * @brief insert_one			: <a
@@ -254,9 +270,13 @@ insert_many(std::string username, std::string database_name,
 */
 std::string insert_one(std::string username, std::string database_name,
 			   bsoncxx::types::b_document insert_document,
-			   std::string acknowledge_level, std::string tag,
-			   bool journal, int majority, int timeout, int nodes,
-			   bool ordered, bool bypass_document_validation);
+			   boost::optional<std::string> acknowledge_level,
+			   boost::optional<std::string> tag,
+			   boost::optional<bool> journal,
+			   boost::optional<int> majority,
+			   boost::optional<int> timeout, boost::optional<int> nodes,
+			   boost::optional<bool> ordered,
+			   boost::optional<bool> bypass_document_validation);
 
 /**
  * @brief find_one_and_replace	: <a
@@ -299,17 +319,19 @@ std::string insert_one(std::string username, std::string database_name,
  * or this one for errors
  * :"{"isSuccessful":false,"Message":" + what happened + "}"
  */
-std::string find_one_and_replace(std::string username,
-				 std::string database_name,
-				 bsoncxx::types::b_document filter_document,
-				 bsoncxx::types::b_document replacement,
-				 bsoncxx::types::b_document projection_document,
-				 bsoncxx::types::b_document sort_document,
-				 bsoncxx::types::b_document collation,
-				 std::string acknowledge_level, std::string tag,
-				 bool journal, int majority, int timeout,
-				 int nodes, int max_time, bool upsert,
-				 bool bypass_document_validation);
+std::string find_one_and_replace(
+	std::string username, std::string database_name,
+	bsoncxx::types::b_document filter_document,
+	bsoncxx::types::b_document replacement,
+	boost::optional<bsoncxx::types::b_document> projection_document,
+	boost::optional<bsoncxx::types::b_document> sort_document,
+	boost::optional<bsoncxx::types::b_document> collation,
+	boost::optional<std::string> acknowledge_level,
+	boost::optional<std::string> tag, boost::optional<bool> journal,
+	boost::optional<int> majority, boost::optional<int> timeout,
+	boost::optional<int> nodes, boost::optional<int> max_time,
+	boost::optional<bool> upsert,
+	boost::optional<bool> bypass_document_validation);
 
 /**
  * @brief find_one_and_update	: <a
@@ -357,15 +379,18 @@ std::string find_one_and_replace(std::string username,
  * or this one for errors
  * :"{"isSuccessful":false,"Message":" + what happened + "}"
  */
-std::string find_one_and_update(std::string username, std::string database_name,
-				bsoncxx::types::b_document filter_document,
-				bsoncxx::types::b_document update_document,
-				bsoncxx::types::b_document projection_document,
-				bsoncxx::types::b_document sort_document,
-				bsoncxx::types::b_document collation,
-				std::string acknowledge_level, std::string tag,
-				bool journal, int majority, int timeout,
-				int nodes, int max_time, bool upsert);
+std::string find_one_and_update(
+	std::string username, std::string database_name,
+	bsoncxx::types::b_document filter_document,
+	bsoncxx::types::b_document update_document,
+	boost::optional<bsoncxx::types::b_document> projection_document,
+	boost::optional<bsoncxx::types::b_document> sort_document,
+	boost::optional<bsoncxx::types::b_document> collation,
+	boost::optional<std::string> acknowledge_level,
+	boost::optional<std::string> tag, boost::optional<bool> journal,
+	boost::optional<int> majority, boost::optional<int> timeout,
+	boost::optional<int> nodes, boost::optional<int> max_time,
+	boost::optional<bool> upsert);
 
 /**
  * @brief update_many					:<a
@@ -408,13 +433,16 @@ std::string find_one_and_update(std::string username, std::string database_name,
  * or this one for errors
  * :"{"isSuccessful":false,"Message":" + what happened + "}"
  */
-std::string update_many(std::string username, std::string database_name,
-			bsoncxx::types::b_document filter_document,
-			bsoncxx::types::b_document update_document,
-			bsoncxx::types::b_document collation,
-			std::string acknowledge_level, std::string tag,
-			bool journal, int majority, int timeout, int nodes,
-			bool upsert, bool bypass_document_validation);
+std::string
+update_many(std::string username, std::string database_name,
+		bsoncxx::types::b_document filter_document,
+		bsoncxx::types::b_document update_document,
+		boost::optional<bsoncxx::types::b_document> collation,
+		boost::optional<std::string> acknowledge_level,
+		boost::optional<std::string> tag, boost::optional<bool> journal,
+		boost::optional<int> majority, boost::optional<int> timeout,
+		boost::optional<int> nodes, boost::optional<bool> upsert,
+		boost::optional<bool> bypass_document_validation);
 
 /**
  * @brief update_many					:<a
@@ -460,10 +488,14 @@ std::string update_many(std::string username, std::string database_name,
 std::string update_one(std::string username, std::string database_name,
 			   bsoncxx::types::b_document filter_document,
 			   bsoncxx::types::b_document update_document,
-			   bsoncxx::types::b_document collation,
-			   std::string acknowledge_level, std::string tag,
-			   bool journal, int majority, int timeout, int nodes,
-			   bool upsert, bool bypass_document_validation);
+			   boost::optional<bsoncxx::types::b_document> collation,
+			   boost::optional<std::string> acknowledge_level,
+			   boost::optional<std::string> tag,
+			   boost::optional<bool> journal,
+			   boost::optional<int> majority,
+			   boost::optional<int> timeout, boost::optional<int> nodes,
+			   boost::optional<bool> upsert,
+			   boost::optional<bool> bypass_document_validation);
 
 } // dbaas
 } // database

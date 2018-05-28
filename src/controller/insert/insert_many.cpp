@@ -1,9 +1,15 @@
+// header
 #include "insert_many.h"
 
+// internal
 #include "src/database/collectionmethods.h"
 #include "src/database/password.h"
 #include "src/database/reply.h"
 
+// boost
+#include <boost/optional.hpp>
+
+// std
 #include <iostream>
 #include <vector>
 
@@ -61,8 +67,6 @@ void dbaas::core::insert_many(http::server::reply &rep,
 			// convert content to json
 			bsoncxx::document::value request_document =
 			bsoncxx::from_json(request.content);
-			// BUG test content
-			std::clog << request.content << std::endl;
 
 			// get query document of request
 			bsoncxx::array::view array;
@@ -102,9 +106,10 @@ void dbaas::core::insert_many(http::server::reply &rep,
 
 			// get write_concern document of request
 			// https://docs.mongodb.com/manual/reference/glossary/#term-write-concern
-			bsoncxx::types::b_document write_concern;
+			boost::optional<bsoncxx::types::b_document> write_concern;
 
 			try {
+
 				write_concern =
 				request_document.view()["write_concern"]
 					.get_document();
@@ -114,11 +119,13 @@ void dbaas::core::insert_many(http::server::reply &rep,
 				// if element doesn't exist in request document
 				if (strcmp(e.what(),
 					   "unset document::element") == 0) {
+
 					// element is optional
 				} // check if element type is wrong
 				else if (strcmp(e.what(),
 						"expected element "
 						"type k_document") == 0) {
+
 					std::string reply =
 					dbaas::database::reply::wrong_item_type(
 						"write_concern");
@@ -129,165 +136,198 @@ void dbaas::core::insert_many(http::server::reply &rep,
 			}
 
 			// get acknowledge_level from write_concern doc
-			std::string acknowledge_level;
-
-			try {
-				acknowledge_level =
-				write_concern.view()["acknowledge_level"]
-					.get_utf8()
-					.value.to_string();
-			}
-			catch (std::exception &e) {
-
-				// if element doesn't exist in request document
-				if (strcmp(e.what(),
-					   "unset document::element") == 0) {
-					// element is optional
-				} // check if element type is wrong
-				else if (strcmp(e.what(),
-						"expected element "
-						"type k_document") == 0) {
-					std::string reply =
-					dbaas::database::reply::wrong_item_type(
-						"acknowledge_level");
-					rep.content.append(reply.c_str(),
-							   reply.size());
-					return;
-				}
-			}
+			boost::optional<std::string> acknowledge_level;
 
 			// get tag from write_concern doc
-			std::string tag;
-
-			try {
-				tag = write_concern.view()["tag"]
-					  .get_utf8()
-					  .value.to_string();
-			}
-			catch (std::exception &e) {
-
-				// if element doesn't exist in request document
-				if (strcmp(e.what(),
-					   "unset document::element") == 0) {
-					// element is optional
-				} // check if element type is wrong
-				else if (strcmp(e.what(),
-						"expected element "
-						"type k_document") == 0) {
-					std::string reply =
-					dbaas::database::reply::wrong_item_type(
-						"tag");
-					rep.content.append(reply.c_str(),
-							   reply.size());
-					return;
-				}
-			}
+			boost::optional<std::string> tag;
 
 			// get journal from write_concern doc
-			bool journal;
-
-			try {
-				journal =
-				write_concern.view()["journal"].get_bool();
-			}
-			catch (std::exception &e) {
-
-				// if element doesn't exist in request document
-				if (strcmp(e.what(),
-					   "unset document::element") == 0) {
-					// element is optional
-				} // check if element type is wrong
-				else if (strcmp(e.what(),
-						"expected element "
-						"type k_document") == 0) {
-					std::string reply =
-					dbaas::database::reply::wrong_item_type(
-						"journal");
-					rep.content.append(reply.c_str(),
-							   reply.size());
-					return;
-				}
-			}
+			boost::optional<bool> journal;
 
 			// get majority from write_concern doc
-			int majority;
-
-			try {
-				majority =
-				write_concern.view()["majority"].get_int32();
-			}
-			catch (std::exception &e) {
-
-				// if element doesn't exist in request document
-				if (strcmp(e.what(),
-					   "unset document::element") == 0) {
-					// element is optional
-				} // check if element type is wrong
-				else if (strcmp(e.what(),
-						"expected element "
-						"type k_document") == 0) {
-					std::string reply =
-					dbaas::database::reply::wrong_item_type(
-						"majority");
-					rep.content.append(reply.c_str(),
-							   reply.size());
-					return;
-				}
-			}
+			boost::optional<int> majority;
 
 			// get timeout from write_concern doc
-			int timeout;
-
-			try {
-				timeout =
-				write_concern.view()["timeout"].get_int32();
-			}
-			catch (std::exception &e) {
-
-				// if element doesn't exist in request document
-				if (strcmp(e.what(),
-					   "unset document::element") == 0) {
-					// element is optional
-				} // check if element type is wrong
-				else if (strcmp(e.what(),
-						"expected element "
-						"type k_document") == 0) {
-					std::string reply =
-					dbaas::database::reply::wrong_item_type(
-						"timeout");
-					rep.content.append(reply.c_str(),
-							   reply.size());
-					return;
-				}
-			}
+			boost::optional<int> timeout;
 
 			// get nodes from write_concern doc
-			int nodes;
+			boost::optional<int> nodes;
 
-			try {
-				nodes = write_concern.view()["nodes"].get_int32();
-			}
-			catch (std::exception &e) {
+			if (write_concern.is_initialized()) {
+				try {
+					acknowledge_level =
+					write_concern.get()
+						.view()["acknowledge_level"]
+						.get_utf8()
+						.value.to_string();
+				}
+				catch (std::exception &e) {
 
-				// if element doesn't exist in request document
-				if (strcmp(e.what(),
-					   "unset document::element") == 0) {
-					// element is optional
-				} // check if element type is wrong
-				else if (strcmp(e.what(),
-						"expected element "
-						"type k_document") == 0) {
-					std::string reply =
-					dbaas::database::reply::wrong_item_type(
-						"nodes");
-					rep.content.append(reply.c_str(),
-							   reply.size());
-					return;
+					// if element doesn't exist in request
+					// document
+					if (strcmp(e.what(),
+						   "unset document::element") ==
+						0) {
+						// element is optional
+					} // check if element type is wrong
+					else if (strcmp(e.what(),
+							"expected element "
+							"type k_document") ==
+						 0) {
+						std::string reply =
+						dbaas::database::reply::
+							wrong_item_type(
+							"acknowledge_level");
+						rep.content.append(reply.c_str(),
+								   reply.size());
+						return;
+					}
+				}
+
+				// get tag from write_concern doc
+				try {
+					tag = write_concern.get()
+						  .view()["tag"]
+						  .get_utf8()
+						  .value.to_string();
+				}
+				catch (std::exception &e) {
+
+					// if element doesn't exist in request
+					// document
+					if (strcmp(e.what(),
+						   "unset document::element") ==
+						0) {
+						// element is optional
+					} // check if element type is wrong
+					else if (strcmp(e.what(),
+							"expected element "
+							"type k_document") ==
+						 0) {
+						std::string reply =
+						dbaas::database::reply::
+							wrong_item_type("tag");
+						rep.content.append(reply.c_str(),
+								   reply.size());
+						return;
+					}
+				}
+
+				// get journal from write_concern doc
+				try {
+					journal = write_concern.get()
+						  .view()["journal"]
+						  .get_bool();
+				}
+				catch (std::exception &e) {
+
+					// if element doesn't exist in request
+					// document
+					if (strcmp(e.what(),
+						   "unset document::element") ==
+						0) {
+						// element is optional
+					} // check if element type is wrong
+					else if (strcmp(e.what(),
+							"expected element "
+							"type k_document") ==
+						 0) {
+						std::string reply =
+						dbaas::database::reply::
+							wrong_item_type("journal");
+						rep.content.append(reply.c_str(),
+								   reply.size());
+						return;
+					}
+				}
+
+				// get majority from write_concern doc
+				try {
+					majority = write_concern.get()
+						   .view()["majority"]
+						   .get_int32();
+				}
+				catch (std::exception &e) {
+
+					// if element doesn't exist in request
+					// document
+					if (strcmp(e.what(),
+						   "unset document::element") ==
+						0) {
+						// element is optional
+					} // check if element type is wrong
+					else if (strcmp(e.what(),
+							"expected element "
+							"type k_document") ==
+						 0) {
+						std::string reply =
+						dbaas::database::reply::
+							wrong_item_type("majority");
+						rep.content.append(reply.c_str(),
+								   reply.size());
+						return;
+					}
+				}
+
+				// get timeout from write_concern doc
+				try {
+					timeout = write_concern.get()
+						  .view()["timeout"]
+						  .get_int32();
+				}
+				catch (std::exception &e) {
+
+					// if element doesn't exist in request
+					// document
+					if (strcmp(e.what(),
+						   "unset document::element") ==
+						0) {
+						// element is optional
+					} // check if element type is wrong
+					else if (strcmp(e.what(),
+							"expected element "
+							"type k_document") ==
+						 0) {
+						std::string reply =
+						dbaas::database::reply::
+							wrong_item_type("timeout");
+						rep.content.append(reply.c_str(),
+								   reply.size());
+						return;
+					}
+				}
+
+				// get nodes from write_concern doc
+				try {
+					nodes = write_concern.get()
+						.view()["nodes"]
+						.get_int32();
+				}
+				catch (std::exception &e) {
+
+					// if element doesn't exist in request
+					// document
+					if (strcmp(e.what(),
+						   "unset document::element") ==
+						0) {
+						// element is optional
+					} // check if element type is wrong
+					else if (strcmp(e.what(),
+							"expected element "
+							"type k_document") ==
+						 0) {
+						std::string reply =
+						dbaas::database::reply::
+							wrong_item_type("nodes");
+						rep.content.append(reply.c_str(),
+								   reply.size());
+						return;
+					}
 				}
 			}
 
 			// get ordered bool from request document
-			bool ordered;
+			boost::optional<bool> ordered;
 
 			try {
 				ordered =
@@ -313,7 +353,7 @@ void dbaas::core::insert_many(http::server::reply &rep,
 			}
 
 			// get ordered bool from request document
-			bool bypass_document_validation;
+			boost::optional<bool> bypass_document_validation;
 
 			try {
 				bypass_document_validation =

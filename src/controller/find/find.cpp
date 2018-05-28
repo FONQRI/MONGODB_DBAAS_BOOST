@@ -1,9 +1,15 @@
+// header
 #include "find.h"
 
+// internal
 #include "src/database/collectionmethods.h"
 #include "src/database/password.h"
 #include "src/database/reply.h"
 
+// boost
+#include <boost/optional.hpp>
+
+// std
 #include <iostream>
 #include <vector>
 
@@ -91,7 +97,7 @@ void dbaas::core::find(http::server::reply &rep, http::server::request request)
 			}
 
 			// get projection document of request
-			bsoncxx::types::b_document projection;
+			boost::optional<bsoncxx::types::b_document> projection;
 
 			try {
 				projection = request_document.view()["projection"]
@@ -117,7 +123,7 @@ void dbaas::core::find(http::server::reply &rep, http::server::request request)
 			}
 
 			// get sort document of request
-			bsoncxx::types::b_document sort;
+			boost::optional<bsoncxx::types::b_document> sort;
 
 			try {
 				sort =
@@ -143,7 +149,7 @@ void dbaas::core::find(http::server::reply &rep, http::server::request request)
 			}
 
 			// get min document from request document
-			bsoncxx::types::b_document min;
+			boost::optional<bsoncxx::types::b_document> min;
 
 			try {
 				min = request_document.view()["min"].get_document();
@@ -168,7 +174,7 @@ void dbaas::core::find(http::server::reply &rep, http::server::request request)
 			}
 
 			// get max document from request document
-			bsoncxx::types::b_document max;
+			boost::optional<bsoncxx::types::b_document> max;
 
 			try {
 				max = request_document.view()["max"].get_document();
@@ -193,7 +199,7 @@ void dbaas::core::find(http::server::reply &rep, http::server::request request)
 			}
 
 			// get limit from request document
-			size_t limit_number;
+			boost::optional<size_t> limit_number;
 
 			try {
 				limit_number =

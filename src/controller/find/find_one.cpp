@@ -1,9 +1,15 @@
+// header
 #include "find_one.h"
 
+// internal
 #include "src/database/collectionmethods.h"
 #include "src/database/password.h"
 #include "src/database/reply.h"
 
+// boost
+#include <boost/optional.hpp>
+
+// std
 #include <iostream>
 #include <string>
 #include <vector>
@@ -93,7 +99,7 @@ void dbaas::core::find_one(http::server::reply &rep,
 			}
 
 			// get projection document of request
-			bsoncxx::types::b_document projection;
+			boost::optional<bsoncxx::types::b_document> projection;
 			try {
 				projection = request_document.view()["projection"]
 						 .get_document();
@@ -123,7 +129,7 @@ void dbaas::core::find_one(http::server::reply &rep,
 			}
 
 			// get sort document of request
-			bsoncxx::types::b_document sort;
+			boost::optional<bsoncxx::types::b_document> sort;
 			try {
 				sort =
 				request_document.view()["sort"].get_document();
@@ -153,7 +159,7 @@ void dbaas::core::find_one(http::server::reply &rep,
 			}
 
 			// get min document from request document
-			bsoncxx::types::b_document min;
+			boost::optional<bsoncxx::types::b_document> min;
 			try {
 				min = request_document.view()["min"].get_document();
 			}
@@ -182,7 +188,7 @@ void dbaas::core::find_one(http::server::reply &rep,
 			}
 
 			// get max document from request document
-			bsoncxx::types::b_document max;
+			boost::optional<bsoncxx::types::b_document> max;
 			try {
 				max = request_document.view()["max"].get_document();
 			}

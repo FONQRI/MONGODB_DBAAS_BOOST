@@ -1,9 +1,15 @@
+// header
 #include "count.h"
 
+// internal
 #include "src/database/collectionmethods.h"
 #include "src/database/password.h"
 #include "src/database/reply.h"
 
+// boost
+#include <boost/optional.hpp>
+
+// std
 #include <iostream>
 #include <vector>
 
@@ -91,7 +97,7 @@ void dbaas::core::count(http::server::reply &rep, http::server::request request)
 			}
 
 			// get limit from request document
-			size_t limit_number;
+			boost::optional<size_t> limit_number;
 
 			try {
 				limit_number =
@@ -118,7 +124,7 @@ void dbaas::core::count(http::server::reply &rep, http::server::request request)
 			}
 
 			// get skip from request document
-			size_t skip;
+			boost::optional<size_t> skip;
 
 			try {
 				skip = request_document.view()["skip"].get_int32();
