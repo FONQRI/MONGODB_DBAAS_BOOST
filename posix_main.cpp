@@ -23,8 +23,11 @@
 #include "src/controller/find/find.h"
 #include "src/controller/find/find_one.h"
 #include "src/controller/get_info/count.h"
+#include "src/controller/get_info/list_indexes.h"
+#include "src/controller/get_info/name.h"
 #include "src/controller/insert/insert_many.h"
 #include "src/controller/insert/insert_one.h"
+#include "src/controller/update/create_index.h"
 #include "src/controller/update/find_one_and_replace.h"
 #include "src/controller/update/find_one_and_update.h"
 #include "src/controller/update/update_many.h"
@@ -61,7 +64,14 @@ int main(int argc, char *argv[])
 	controller_mapper["find_one_and_delete"] = dbaas::core::find_one_and_delete;
 	controller_mapper["update_one"] = dbaas::core::update_one;
 	controller_mapper["update_many"] = dbaas::core::update_many;
-	controller_mapper["find_one_and_update"] = dbaas::core::find_one_and_update;
+	controller_mapper["name"] = dbaas::core::name;
+	controller_mapper["list_indexes"] = dbaas::core::list_indexes;
+
+	controller_mapper["create_index"] = dbaas::core::create_index;
+
+	controller_mapper["find_one_and_replace"] =
+	dbaas::core::find_one_and_replace;
+
 	controller_mapper["find_one_and_replace"] =
 	dbaas::core::find_one_and_replace;
 
