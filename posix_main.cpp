@@ -54,24 +54,29 @@ function_mapper controller_mapper;
 int main(int argc, char *argv[])
 {
 	// init controller map
+
+	// find
 	controller_mapper["find"] = dbaas::core::find;
 	controller_mapper["find_one"] = dbaas::core::find_one;
+
+	// insert
 	controller_mapper["insert_one"] = dbaas::core::insert_one;
 	controller_mapper["insert_many"] = dbaas::core::insert_many;
+
+	// get_info
 	controller_mapper["count"] = dbaas::core::count;
-	controller_mapper["delete_one"] = dbaas::core::delete_one;
-	controller_mapper["delete_many"] = dbaas::core::delete_many;
-	controller_mapper["find_one_and_delete"] = dbaas::core::find_one_and_delete;
-	controller_mapper["update_one"] = dbaas::core::update_one;
-	controller_mapper["update_many"] = dbaas::core::update_many;
 	controller_mapper["name"] = dbaas::core::name;
 	controller_mapper["list_indexes"] = dbaas::core::list_indexes;
 
+	// delete
+	controller_mapper["delete_one"] = dbaas::core::delete_one;
+	controller_mapper["delete_many"] = dbaas::core::delete_many;
+	controller_mapper["find_one_and_delete"] = dbaas::core::find_one_and_delete;
+
+	// update
+	controller_mapper["update_one"] = dbaas::core::update_one;
+	controller_mapper["update_many"] = dbaas::core::update_many;
 	controller_mapper["create_index"] = dbaas::core::create_index;
-
-	controller_mapper["find_one_and_replace"] =
-	dbaas::core::find_one_and_replace;
-
 	controller_mapper["find_one_and_replace"] =
 	dbaas::core::find_one_and_replace;
 
