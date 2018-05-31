@@ -497,6 +497,78 @@ std::string update_one(std::string username, std::string database_name,
 			   boost::optional<bool> upsert,
 			   boost::optional<bool> bypass_document_validation);
 
+/**
+ * @brief drop			: drop a collection <a href=
+ * "https://docs.mongodb.com/manual/reference/method/db.collection.drop/#db.collection.drop">
+ * drop mongodb </a>
+ * @param username		: username
+ * @param database_name	: collection name
+ * @return				: success or failure message
+ */
+std::string drop(std::string username, std::string database_name);
+
+/**
+ * @brief create_index				: <a
+ * href="https://docs.mongodb.com/manual/reference/method/db.collection.createIndex/">
+ * create_index mongodb </a>
+ * @param username				   	: username of database
+ * @param database_name			   	: database name of user
+ * @param index_document		   	: index_document
+ * @param options_is_set		   	: true if options document is set from
+ * user side in request
+ * @param background			   	: background of options
+ * @param unique				   	: unique of options
+ * @param sparse				   	: sparse of options
+ * @param version				   	: version of options
+ * @param twod_sphere_version	   	: twod_sphere_version of options
+ * @param twod_bits_precision	   	: twod_bits_precision of options
+ * @param twod_location_max		   	: twod_location_max of options
+ * @param twod_location_min		   	: twod_location_min of options
+ * @param haystack_bucket_size	   	: haystack_bucket_size of options
+ * @param expire_after			   	: expire_after of options
+ * @param name					   	: name of options
+ * @param default_language		   	: default_language of options
+ * @param language_override		   	: language_override of options
+ * @param collation				   	: collation of options
+ * @param weights				   	: weights of options
+ * @param partial_filter_expression	: partial_filter_expression of options
+ * @param max_time				   	: max_time of
+ * operation_options
+ * @param acknowledge_level		   	: acknowledge_level of
+ * write_concern
+ * @param tag					   	: tag of write_concern
+ * @param journal				   	: journal of
+ * write_concern
+ * @param majority				   	: majority of
+ * write_concern
+ * @param timeout				   	: timeout of
+ * write_concern
+ * @param nodes					   	: nodes of write_concern
+ * @return							: success or failure
+ * message
+ */
+std::string create_index(
+	std::string username, std::string database_name,
+	bsoncxx::types::b_document index_document, bool options_is_set,
+	boost::optional<bool> background, boost::optional<bool> unique,
+	boost::optional<bool> sparse, boost::optional<std::int32_t> version,
+	boost::optional<std::uint8_t> twod_sphere_version,
+	boost::optional<std::uint8_t> twod_bits_precision,
+	boost::optional<double> twod_location_max,
+	boost::optional<double> twod_location_min,
+	boost::optional<double> haystack_bucket_size,
+	boost::optional<size_t> expire_after, boost::optional<std::string> name,
+	boost::optional<std::string> default_language,
+	boost::optional<std::string> language_override,
+	boost::optional<bsoncxx::types::b_document> collation,
+	boost::optional<bsoncxx::types::b_document> weights,
+	boost::optional<bsoncxx::types::b_document> partial_filter_expression,
+	boost::optional<size_t> max_time,
+	boost::optional<std::string> acknowledge_level,
+	boost::optional<std::string> tag, boost::optional<bool> journal,
+	boost::optional<int> majority, boost::optional<int> timeout,
+	boost::optional<int> nodes);
+
 } // dbaas
 } // database
 

@@ -58,6 +58,9 @@ std::string dbaas::database::delete_many(
 
 			if (nodes.is_initialized()) {
 				write_concern.nodes(nodes.get());
+			}
+
+			if (tag.is_initialized()) {
 				write_concern.tag(
 				mongocxx::stdx::string_view(tag.get()));
 			}
@@ -160,10 +163,12 @@ std::string dbaas::database::delete_one(
 
 			if (nodes.is_initialized()) {
 				write_concern.nodes(nodes.get());
+			}
+
+			if (tag.is_initialized()) {
 				write_concern.tag(
 				mongocxx::stdx::string_view(tag.get()));
 			}
-
 			if (acknowledge_level.is_initialized()) {
 				if (acknowledge_level.get() ==
 					"k_acknowledged") {
@@ -273,6 +278,9 @@ std::string dbaas::database::find_one_and_delete(
 
 			if (nodes.is_initialized()) {
 				write_concern.nodes(nodes.get());
+			}
+
+			if (tag.is_initialized()) {
 				write_concern.tag(
 				mongocxx::stdx::string_view(tag.get()));
 			}
@@ -529,10 +537,12 @@ std::string dbaas::database::insert_many(
 
 			if (nodes.is_initialized()) {
 				write_concern.nodes(nodes.get());
+			}
+
+			if (tag.is_initialized()) {
 				write_concern.tag(
 				mongocxx::stdx::string_view(tag.get()));
 			}
-
 			if (acknowledge_level.is_initialized()) {
 				if (acknowledge_level.get() ==
 					"k_acknowledged") {
@@ -629,6 +639,9 @@ std::string dbaas::database::insert_one(
 
 			if (nodes.is_initialized()) {
 				write_concern.nodes(nodes.get());
+			}
+
+			if (tag.is_initialized()) {
 				write_concern.tag(
 				mongocxx::stdx::string_view(tag.get()));
 			}
@@ -755,6 +768,9 @@ std::string dbaas::database::find_one_and_replace(
 
 			if (nodes.is_initialized()) {
 				write_concern.nodes(nodes.get());
+			}
+
+			if (tag.is_initialized()) {
 				write_concern.tag(
 				mongocxx::stdx::string_view(tag.get()));
 			}
@@ -876,6 +892,9 @@ std::string dbaas::database::find_one_and_update(
 
 			if (nodes.is_initialized()) {
 				write_concern.nodes(nodes.get());
+			}
+
+			if (tag.is_initialized()) {
 				write_concern.tag(
 				mongocxx::stdx::string_view(tag.get()));
 			}
@@ -993,6 +1012,9 @@ std::string dbaas::database::update_many(
 
 			if (nodes.is_initialized()) {
 				write_concern.nodes(nodes.get());
+			}
+
+			if (tag.is_initialized()) {
 				write_concern.tag(
 				mongocxx::stdx::string_view(tag.get()));
 			}
@@ -1109,6 +1131,10 @@ std::string dbaas::database::update_one(
 
 			if (nodes.is_initialized()) {
 				write_concern.nodes(nodes.get());
+			}
+
+			if (tag.is_initialized()) {
+
 				write_concern.tag(
 				mongocxx::stdx::string_view(tag.get()));
 			}
@@ -1142,9 +1168,6 @@ std::string dbaas::database::update_one(
 					mongocxx::write_concern::level::
 						k_unacknowledged);
 				}
-
-				// add created write_concern to options
-				options.write_concern(write_concern);
 			}
 
 			// add created write_concern to options
@@ -1154,6 +1177,229 @@ std::string dbaas::database::update_one(
 		// create cursor bu qyery and options
 		collection.update_one({filter_document}, {update_document},
 				  options);
+
+		return dbaas::database::reply::answer_done();
+	}
+	catch (std::exception &e) {
+
+		// create json from error
+		return reply::error(e.what());
+	}
+}
+
+std::string dbaas::database::drop(std::string username,
+				  std::string database_name)
+{
+
+	// create connection
+	mongocxx::client connection{mongocxx::uri{}};
+
+	// create collection
+	auto collection = connection[username][database_name];
+	try {
+
+		// drop collection
+		collection.drop();
+
+		return dbaas::database::reply::answer_done();
+	}
+	catch (std::exception &e) {
+
+		// create json from error
+		return reply::error(e.what());
+	}
+}
+
+std::string dbaas::database::create_index(
+	std::string username, std::string database_name,
+	bsoncxx::types::b_document index_document, bool options_is_set,
+	boost::optional<bool> background, boost::optional<bool> unique,
+	boost::optional<bool> sparse, boost::optional<std::int32_t> version,
+	boost::optional<std::uint8_t> twod_sphere_version,
+	boost::optional<std::uint8_t> twod_bits_precision,
+	boost::optional<double> twod_location_max,
+	boost::optional<double> twod_location_min,
+	boost::optional<double> haystack_bucket_size,
+	boost::optional<size_t> expire_after, boost::optional<std::string> name,
+	boost::optional<std::string> default_language,
+	boost::optional<std::string> language_override,
+	boost::optional<bsoncxx::types::b_document> collation,
+	boost::optional<bsoncxx::types::b_document> weights,
+	boost::optional<bsoncxx::types::b_document> partial_filter_expression,
+	boost::optional<size_t> max_time,
+	boost::optional<std::string> acknowledge_level,
+	boost::optional<std::string> tag, boost::optional<bool> journal,
+	boost::optional<int> majority, boost::optional<int> timeout,
+	boost::optional<int> nodes)
+{
+	// create connection
+	mongocxx::client connection{mongocxx::uri{}};
+
+	// create collection
+	mongocxx::collection collection = connection[username][database_name];
+	try {
+
+		mongocxx::options::index options;
+
+		if (options_is_set) {
+
+			if (background.is_initialized()) {
+				options.background(background.get());
+			}
+
+			if (unique.is_initialized()) {
+				options.unique(unique.get());
+			}
+
+			if (sparse.is_initialized()) {
+				options.sparse(sparse.get());
+			}
+
+			if (version.is_initialized()) {
+				options.version(version.get());
+			}
+
+			if (twod_sphere_version.is_initialized()) {
+				options.twod_sphere_version(
+				twod_sphere_version.get());
+			}
+
+			if (twod_bits_precision.is_initialized()) {
+				options.twod_bits_precision(
+				twod_bits_precision.get());
+			}
+
+			if (twod_location_max.is_initialized()) {
+				options.twod_location_max(twod_location_max.get());
+			}
+
+			if (twod_location_min.is_initialized()) {
+				options.twod_location_min(twod_location_min.get());
+			}
+
+			if (haystack_bucket_size.is_initialized()) {
+				options.haystack_bucket_size(
+				haystack_bucket_size.get());
+			}
+
+			if (expire_after.is_initialized()) {
+				options.expire_after(
+				std::chrono::seconds(expire_after.get()));
+			}
+
+			if (name.is_initialized()) {
+				bsoncxx::string::view_or_value temp_name{
+				name.get()};
+				options.name(temp_name);
+			}
+
+			if (default_language.is_initialized()) {
+
+				bsoncxx::string::view_or_value
+				temp_default_language{default_language.get()};
+				options.default_language(temp_default_language);
+			}
+
+			if (language_override.is_initialized()) {
+				bsoncxx::string::view_or_value
+				temp_language_override{language_override.get()};
+				options.language_override(temp_language_override);
+			}
+
+			if (collation.is_initialized()) {
+				options.collation(collation.get());
+			}
+
+			if (weights.is_initialized()) {
+				options.weights(weights.get());
+			}
+
+			if (partial_filter_expression.is_initialized()) {
+				options.partial_filter_expression(
+				partial_filter_expression.get());
+			}
+		}
+
+		mongocxx::options::index_view operation_options =
+		mongocxx::options::index_view{};
+
+		if (max_time.is_initialized()) {
+			operation_options.max_time(
+			std::chrono::milliseconds(max_time.get()));
+		}
+
+		// drop collection
+		collection.create_index(index_document.view(), options,
+					operation_options);
+
+		if (journal.is_initialized() || majority.is_initialized() ||
+			timeout.is_initialized() || nodes.is_initialized() ||
+			tag.is_initialized() ||
+			acknowledge_level.is_initialized()) {
+
+			// create write_concern
+			// https://docs.mongodb.com/manual/reference/glossary/#term-write-concern
+			mongocxx::write_concern write_concern =
+			mongocxx::write_concern();
+
+			if (journal.is_initialized()) {
+				write_concern.journal(journal.get());
+			}
+			if (majority.is_initialized()) {
+
+				write_concern.majority(
+				std::chrono::milliseconds(majority.get()));
+			}
+
+			if (timeout.is_initialized()) {
+				write_concern.timeout(
+				std::chrono::milliseconds(timeout.get()));
+			}
+
+			if (nodes.is_initialized()) {
+				write_concern.nodes(nodes.get());
+			}
+
+			if (tag.is_initialized()) {
+
+				write_concern.tag(
+				mongocxx::stdx::string_view(tag.get()));
+			}
+
+			if (acknowledge_level.is_initialized()) {
+				if (acknowledge_level.get() ==
+					"k_acknowledged") {
+					write_concern.acknowledge_level(
+					mongocxx::write_concern::level::
+						k_acknowledged);
+				}
+				else if (acknowledge_level.get() ==
+					 "k_default") {
+					write_concern.acknowledge_level(
+					mongocxx::write_concern::level::
+						k_acknowledged);
+				}
+				else if (acknowledge_level.get() ==
+					 "k_majority") {
+					write_concern.acknowledge_level(
+					mongocxx::write_concern::level::
+						k_majority);
+				}
+				else if (acknowledge_level.get() == "k_tag") {
+					write_concern.acknowledge_level(
+					mongocxx::write_concern::level::k_tag);
+				}
+				else if (acknowledge_level.get() ==
+					 "k_unacknowledged") {
+					write_concern.acknowledge_level(
+					mongocxx::write_concern::level::
+						k_unacknowledged);
+				}
+			}
+
+			// add created write_concern to options
+			operation_options.write_concern(write_concern);
+		}
 
 		return dbaas::database::reply::answer_done();
 	}
