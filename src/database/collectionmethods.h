@@ -514,7 +514,9 @@ std::string drop(std::string username, std::string database_name);
  * @param username				   	: username of database
  * @param database_name			   	: database name of user
  * @param index_document		   	: index_document
- * @param options_is_set		   	: true if options document is set from
+ * @param options_is_set		   	: true if options document is
+ * set
+ * from
  * user side in request
  * @param background			   	: background of options
  * @param unique				   	: unique of options
@@ -544,7 +546,8 @@ std::string drop(std::string username, std::string database_name);
  * @param timeout				   	: timeout of
  * write_concern
  * @param nodes					   	: nodes of write_concern
- * @return							: success or failure
+ * @return							: success or
+ * failure
  * message
  */
 std::string create_index(
@@ -568,6 +571,15 @@ std::string create_index(
 	boost::optional<std::string> tag, boost::optional<bool> journal,
 	boost::optional<int> majority, boost::optional<int> timeout,
 	boost::optional<int> nodes);
+/**
+ * @brief name			: return name of collection
+ * @param username		: username of database
+ * @param database_name	: database name of user
+ * @return				: name of collection in json
+ */
+std::string name(std::string username, std::string database_name);
+
+std::string list_indexes(std::string username, std::string database_name);
 
 } // dbaas
 } // database

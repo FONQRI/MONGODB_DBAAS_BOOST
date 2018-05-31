@@ -1328,10 +1328,6 @@ std::string dbaas::database::create_index(
 			std::chrono::milliseconds(max_time.get()));
 		}
 
-		// drop collection
-		collection.create_index(index_document.view(), options,
-					operation_options);
-
 		if (journal.is_initialized() || majority.is_initialized() ||
 			timeout.is_initialized() || nodes.is_initialized() ||
 			tag.is_initialized() ||
@@ -1401,11 +1397,74 @@ std::string dbaas::database::create_index(
 			operation_options.write_concern(write_concern);
 		}
 
+		// drop collection
+		collection.create_index(index_document.view(), options,
+					operation_options);
+
 		return dbaas::database::reply::answer_done();
 	}
 	catch (std::exception &e) {
 
 		// create json from error
+		return reply::error(e.what());
+	}
+}
+
+std::string dbaas::database::name(std::string username,
+				  std::string database_name)
+{
+	// create connection
+	mongocxx::client connection{mongocxx::uri{}};
+
+	// create xollection
+	auto collection = connection[username][database_name];
+
+	try {
+
+		// create option
+		mongocxx::options::count options = mongocxx::options::count{};
+
+		mongocxx::stdx::string_view cursor = collection.name();
+
+		// make reply json
+		return dbaas::database::reply::answer(cursor.to_string());
+	}
+	catch (std::exception &e) {
+		// make error json
+		return reply::error(e.what());
+	}
+}
+
+std::string dbaas::database::list_indexes(std::string username,
+					  std::string database_name)
+{
+	// create connection
+	mongocxx::client connection{mongocxx::uri{}};
+
+	// create xollection
+	auto collection = connection[username][database_name];
+
+	try {
+		auto cursor = collection.list_indexes();
+		std::string reply{};
+
+		reply.append("[");
+		for (auto &&doc : cursor) {
+			reply.append(bsoncxx::to_json(doc) + ",");
+		}
+
+		// remove final "," character if ther is any element
+		if (reply.size() > 2) {
+			reply.erase(reply.size() - 1, 1);
+		}
+
+		reply.append("]");
+
+		// make reply json
+		return dbaas::database::reply::answer(reply);
+	}
+	catch (std::exception &e) {
+		// make error json
 		return reply::error(e.what());
 	}
 }

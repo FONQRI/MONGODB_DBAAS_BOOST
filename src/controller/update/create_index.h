@@ -8,7 +8,13 @@
 
 namespace dbaas {
 namespace core {
-
+/**
+* @brief create_index	: create index <a href =
+* "https://docs.mongodb.com/manual/reference/method/db.collection.createIndex/">
+* create index mongodb <a>
+* @param rep
+* @param request
+*/
 void create_index(http::server::reply &rep, http::server::request request);
 
 } // dbaas
