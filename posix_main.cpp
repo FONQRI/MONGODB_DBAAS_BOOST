@@ -20,14 +20,20 @@
 #include "src/controller/delete/delete_many.h"
 #include "src/controller/delete/delete_one.h"
 #include "src/controller/delete/find_one_and_delete.h"
+
+#include "src/controller/find/aggregate.h"
 #include "src/controller/find/find.h"
 #include "src/controller/find/find_one.h"
+
 #include "src/controller/get_info/count.h"
 #include "src/controller/get_info/list_indexes.h"
 #include "src/controller/get_info/name.h"
+
 #include "src/controller/insert/insert_many.h"
 #include "src/controller/insert/insert_one.h"
+
 #include "src/controller/update/create_index.h"
+#include "src/controller/update/distinct.h"
 #include "src/controller/update/find_one_and_replace.h"
 #include "src/controller/update/find_one_and_update.h"
 #include "src/controller/update/update_many.h"
@@ -58,6 +64,7 @@ int main(int argc, char *argv[])
 	// find
 	controller_mapper["find"] = dbaas::core::find;
 	controller_mapper["find_one"] = dbaas::core::find_one;
+	controller_mapper["aggregate"] = dbaas::core::aggregate;
 
 	// insert
 	controller_mapper["insert_one"] = dbaas::core::insert_one;
@@ -77,6 +84,7 @@ int main(int argc, char *argv[])
 	controller_mapper["update_one"] = dbaas::core::update_one;
 	controller_mapper["update_many"] = dbaas::core::update_many;
 	controller_mapper["create_index"] = dbaas::core::create_index;
+	controller_mapper["distinct"] = dbaas::core::distinct;
 	controller_mapper["find_one_and_replace"] =
 	dbaas::core::find_one_and_replace;
 

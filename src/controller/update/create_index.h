@@ -12,8 +12,8 @@ namespace core {
 * @brief create_index	: create index <a href =
 * "https://docs.mongodb.com/manual/reference/method/db.collection.createIndex/">
 * create index mongodb <a>
-* @param rep
-* @param request
+* @param rep			: reply of http
+* @param request		: request of http
 */
 void create_index(http::server::reply &rep, http::server::request request);
 

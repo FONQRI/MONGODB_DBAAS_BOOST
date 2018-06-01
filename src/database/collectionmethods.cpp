@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include <iterator>
+
 // TODO [3] use costume uri (real server and backups)
 
 std::string dbaas::database::delete_many(
@@ -1448,6 +1449,306 @@ std::string dbaas::database::list_indexes(std::string username,
 		auto cursor = collection.list_indexes();
 		std::string reply{};
 
+		reply.append("[");
+		for (auto &&doc : cursor) {
+			reply.append(bsoncxx::to_json(doc) + ",");
+		}
+
+		// remove final "," character if ther is any element
+		if (reply.size() > 2) {
+			reply.erase(reply.size() - 1, 1);
+		}
+
+		reply.append("]");
+
+		// make reply json
+		return dbaas::database::reply::answer(reply);
+	}
+	catch (std::exception &e) {
+		// make error json
+		return reply::error(e.what());
+	}
+}
+
+std::string
+dbaas::database::distinct(std::string username, std::string database_name,
+			  std::string name_string,
+			  bsoncxx::types::b_document filter_document,
+			  boost::optional<bsoncxx::types::b_document> collation,
+			  boost::optional<size_t> max_time)
+{
+	// create connection
+	mongocxx::client connection{mongocxx::uri{}};
+
+	// create collection
+	auto collection = connection[username][database_name];
+
+	try {
+
+		// create option
+		mongocxx::options::distinct options = mongocxx::options::distinct();
+		if (collation.is_initialized()) {
+
+			options.collation(collation.get().view());
+		}
+
+		if (max_time.is_initialized()) {
+
+			options.max_time(std::chrono::milliseconds(max_time.get()));
+		}
+
+		bsoncxx::string::view_or_value name_view{name_string};
+
+		auto cursor =
+		collection.distinct(name_view, {filter_document}, options);
+
+		// make reply json
+		return dbaas::database::reply::answer("cursor.to_string()");
+	}
+	catch (std::exception &e) {
+		// make error json
+		return reply::error(e.what());
+	}
+}
+
+std::string dbaas::database::aggregate(
+	std::string username, std::string database_name,
+	optional_bool allow_disk_use, optional_bool use_cursor,
+	optional_bool bypass_document_validation, optional_size max_time,
+	optional_int batch_size, optional_ducument collation,
+	optional_string acknowledge_level, optional_string tag,
+	optional_bool journal, optional_int majority, optional_int timeout,
+	optional_int nodes, optional_ducument hint, optional_string hint_str,
+	optional_int limit, optional_int sample, optional_int skip,
+	optional_string out, optional_string count, optional_ducument add_fields,
+	optional_ducument bucket, optional_ducument bucket_auto,
+	optional_ducument coll_stats, optional_ducument facet,
+	optional_ducument geo_near, optional_ducument graph_lookup,
+	optional_ducument group, optional_bool index_stats,
+	optional_ducument lookup, optional_ducument match,
+	optional_ducument project, optional_ducument redact,
+	optional_ducument replace_root, optional_ducument sort,
+	optional_ducument sort_by_count, optional_string sort_by_count_str,
+	optional_ducument unwind, optional_string unwind_str)
+{
+	// create connection
+	mongocxx::client connection{mongocxx::uri{}};
+
+	// create collection
+	auto collection = connection[username][database_name];
+
+	try {
+		mongocxx::options::aggregate options =
+		mongocxx::options::aggregate();
+
+		if (allow_disk_use.is_initialized()) {
+			options.allow_disk_use(allow_disk_use.get());
+		}
+
+		if (use_cursor.is_initialized()) {
+			options.use_cursor(use_cursor.get());
+		}
+
+		if (bypass_document_validation.is_initialized()) {
+			options.bypass_document_validation(
+			bypass_document_validation.get());
+		}
+
+		if (max_time.is_initialized()) {
+			options.max_time(std::chrono::milliseconds(max_time.get()));
+		}
+
+		if (batch_size.is_initialized()) {
+			options.batch_size(batch_size.get());
+		}
+
+		if (collation.is_initialized()) {
+			options.collation(collation.get().view());
+		}
+
+		if (journal.is_initialized() || majority.is_initialized() ||
+			timeout.is_initialized() || nodes.is_initialized() ||
+			tag.is_initialized() ||
+			acknowledge_level.is_initialized()) {
+
+			// create write_concern
+			// https://docs.mongodb.com/manual/reference/glossary/#term-write-concern
+			mongocxx::write_concern write_concern =
+			mongocxx::write_concern();
+
+			if (journal.is_initialized()) {
+				write_concern.journal(journal.get());
+			}
+			if (majority.is_initialized()) {
+
+				write_concern.majority(
+				std::chrono::milliseconds(majority.get()));
+			}
+
+			if (timeout.is_initialized()) {
+				write_concern.timeout(
+				std::chrono::milliseconds(timeout.get()));
+			}
+
+			if (nodes.is_initialized()) {
+				write_concern.nodes(nodes.get());
+			}
+
+			if (tag.is_initialized()) {
+
+				write_concern.tag(
+				mongocxx::stdx::string_view(tag.get()));
+			}
+
+			if (acknowledge_level.is_initialized()) {
+				if (acknowledge_level.get() ==
+					"k_acknowledged") {
+					write_concern.acknowledge_level(
+					mongocxx::write_concern::level::
+						k_acknowledged);
+				}
+				else if (acknowledge_level.get() ==
+					 "k_default") {
+					write_concern.acknowledge_level(
+					mongocxx::write_concern::level::
+						k_acknowledged);
+				}
+				else if (acknowledge_level.get() ==
+					 "k_majority") {
+					write_concern.acknowledge_level(
+					mongocxx::write_concern::level::
+						k_majority);
+				}
+				else if (acknowledge_level.get() == "k_tag") {
+					write_concern.acknowledge_level(
+					mongocxx::write_concern::level::k_tag);
+				}
+				else if (acknowledge_level.get() ==
+					 "k_unacknowledged") {
+					write_concern.acknowledge_level(
+					mongocxx::write_concern::level::
+						k_unacknowledged);
+				}
+			}
+
+			// add created write_concern to options
+			options.write_concern(write_concern);
+		}
+
+		if (hint.is_initialized()) {
+			options.hint(mongocxx::hint(hint.get().view()));
+		}
+		else if (hint_str.is_initialized()) {
+			options.hint(mongocxx::hint(hint_str.get()));
+		}
+
+		// TODO implement this ***************************
+		mongocxx::read_preference read_ref;
+		read_ref = mongocxx::read_preference();
+		options.read_preference(read_ref);
+		//************************************************
+
+		mongocxx::pipeline pipeline = mongocxx::pipeline();
+
+		if (limit.is_initialized()) {
+			pipeline.limit(limit.get());
+		}
+
+		if (sample.is_initialized()) {
+			pipeline.sample(sample.get());
+		}
+
+		if (skip.is_initialized()) {
+			pipeline.skip(skip.get());
+		}
+
+		if (out.is_initialized()) {
+			pipeline.out(out.get());
+		}
+
+		if (count.is_initialized()) {
+			pipeline.count(count.get());
+		}
+
+		if (add_fields.is_initialized()) {
+			pipeline.add_fields(add_fields.get().view());
+		}
+
+		if (bucket.is_initialized()) {
+			pipeline.bucket(bucket.get().view());
+		}
+
+		if (bucket_auto.is_initialized()) {
+			pipeline.bucket_auto(bucket_auto.get().view());
+		}
+
+		if (coll_stats.is_initialized()) {
+			pipeline.coll_stats(coll_stats.get().view());
+		}
+
+		if (facet.is_initialized()) {
+			pipeline.facet(facet.get().view());
+		}
+
+		if (geo_near.is_initialized()) {
+			pipeline.geo_near(geo_near.get().view());
+		}
+
+		if (graph_lookup.is_initialized()) {
+			pipeline.graph_lookup(graph_lookup.get().view());
+		}
+
+		if (group.is_initialized()) {
+			pipeline.group(group.get().view());
+		}
+
+		if (index_stats.is_initialized()) {
+			if (index_stats.get()) {
+				pipeline.index_stats();
+			}
+		}
+
+		if (lookup.is_initialized()) {
+			pipeline.lookup(lookup.get().view());
+		}
+
+		if (match.is_initialized()) {
+			pipeline.match(match.get().view());
+		}
+
+		if (project.is_initialized()) {
+			pipeline.project(project.get().view());
+		}
+
+		if (redact.is_initialized()) {
+			pipeline.redact(redact.get().view());
+		}
+
+		if (replace_root.is_initialized()) {
+			pipeline.replace_root(replace_root.get().view());
+		}
+
+		if (sort.is_initialized()) {
+			pipeline.sort(sort.get().view());
+		}
+
+		if (sort_by_count.is_initialized()) {
+			pipeline.sort_by_count(sort_by_count.get().view());
+		}
+		else if (sort_by_count_str.is_initialized()) {
+			pipeline.sort_by_count(sort_by_count_str.get());
+		}
+
+		if (unwind.is_initialized()) {
+			pipeline.unwind(unwind.get().view());
+		}
+		else if (unwind_str.is_initialized()) {
+			pipeline.unwind(unwind_str.get());
+		}
+
+		auto cursor = collection.aggregate(pipeline, options);
+
+		std::string reply{};
 		reply.append("[");
 		for (auto &&doc : cursor) {
 			reply.append(bsoncxx::to_json(doc) + ",");

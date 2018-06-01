@@ -22,6 +22,12 @@
 namespace dbaas {
 namespace database {
 
+typedef boost::optional<bool> optional_bool;
+typedef boost::optional<bsoncxx::types::b_document> optional_ducument;
+typedef boost::optional<std::string> optional_string;
+typedef boost::optional<int> optional_int;
+typedef boost::optional<size_t> optional_size;
+
 /**
  * @brief delete_many		: <a
  * href="https://docs.mongodb.com/manual/reference/method/db.collection.deleteMany/">delete_many
@@ -579,8 +585,40 @@ std::string create_index(
  */
 std::string name(std::string username, std::string database_name);
 
+/**
+ * @brief list_indexes	: return an array of indexes of specific collection
+ * @param username		: username of database
+ * @param database_name	: database name of user
+ * @return 				: an array of indexes of collection
+ */
 std::string list_indexes(std::string username, std::string database_name);
 
+std::string distinct(std::string username, std::string database_name,
+			 std::string name_string,
+			 bsoncxx::types::b_document filter_document,
+			 boost::optional<bsoncxx::types::b_document> collation,
+			 boost::optional<size_t> max_time);
+
+std::string
+aggregate(std::string username, std::string database_name,
+	  optional_bool allow_disk_use, optional_bool use_cursor,
+	  optional_bool bypass_document_validation, optional_size max_time,
+	  optional_int batch_size, optional_ducument collation,
+	  optional_string acknowledge_level, optional_string tag,
+	  optional_bool journal, optional_int majority, optional_int timeout,
+	  optional_int nodes, optional_ducument hint, optional_string hint_str,
+	  optional_int limit, optional_int sample, optional_int skip,
+	  optional_string out, optional_string count,
+	  optional_ducument add_fields, optional_ducument bucket,
+	  optional_ducument bucket_auto, optional_ducument coll_stats,
+	  optional_ducument facet, optional_ducument geo_near,
+	  optional_ducument graph_lookup, optional_ducument group,
+	  optional_bool index_stats, optional_ducument lookup,
+	  optional_ducument match, optional_ducument project,
+	  optional_ducument redact, optional_ducument replace_root,
+	  optional_ducument sort, optional_ducument sort_by_count,
+	  optional_string sort_by_count_str, optional_ducument unwind,
+	  optional_string unwind_str);
 } // dbaas
 } // database
 
