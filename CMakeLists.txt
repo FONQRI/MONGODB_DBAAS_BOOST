@@ -19,34 +19,32 @@ file(GLOB RequestHpp ./src/controller/*.hpp)
 
 #************************
 
-file(GLOB DeleteHeaders   ./src/controller/delete/*.h)
-file(GLOB DeleteCpp       ./src/controller/delete/*.cpp)
-file(GLOB DeleteHpp       ./src/controller/delete/*.hpp)
+file(GLOB DeleteCollectionHeaders   ./src/controller/collection/delete/*.h)
+file(GLOB DeleteCollectionCpp       ./src/controller/collection/delete/*.cpp)
+file(GLOB DeleteCollectionHpp       ./src/controller/collection/delete/*.hpp)
 
 
-file(GLOB FindHeaders     ./src/controller/find/*.h)
-file(GLOB FindCpp         ./src/controller/find/*.cpp)
-file(GLOB FindHpp         ./src/controller/find/*.hpp)
+file(GLOB FindCollectionHeaders     ./src/controller/collection/find/*.h)
+file(GLOB FindCollectionCpp         ./src/controller/collection/find/*.cpp)
+file(GLOB FindCollectionHpp         ./src/controller/collection/find/*.hpp)
 
 
-file(GLOB GetInfoHeaders  ./src/controller/get_info/*.h)
-file(GLOB GetInfoCpp      ./src/controller/get_info/*.cpp)
-file(GLOB GetInfoHpp      ./src/controller/get_info/*.hpp)
+file(GLOB GetInfoCollectionHeaders  ./src/controller/collection/get_info/*.h)
+file(GLOB GetInfoCollectionCpp      ./src/controller/collection/get_info/*.cpp)
+file(GLOB GetInfoCollectionHpp      ./src/controller/collection/get_info/*.hpp)
 
 
-file(GLOB InsertHeaders   ./src/controller/insert/*.h)
-file(GLOB InsertCpp       ./src/controller/insert/*.cpp)
-file(GLOB InsertHpp       ./src/controller/insert/*.hpp)
+file(GLOB InsertCollectionHeaders   ./src/controller/collection/insert/*.h)
+file(GLOB InsertCollectionCpp       ./src/controller/collection/insert/*.cpp)
+file(GLOB InsertCollectionHpp       ./src/controller/collection/insert/*.hpp)
 
 
-file(GLOB UpdateHeaders   ./src/controller/update/*.h)
-file(GLOB UpdateCpp       ./src/controller/update/*.cpp)
-file(GLOB UpdateHpp       ./src/controller/update/*.hpp)
+file(GLOB UpdateCollectionHeaders   ./src/controller/collection/update/*.h)
+file(GLOB UpdateCollectionCpp       ./src/controller/collection/update/*.cpp)
+file(GLOB UpdateCollectionHpp       ./src/controller/collection/update/*.hpp)
 
-
-file(GLOB OprationsHeaders ./src/controller/oprations/*.h)
-file(GLOB OprationsCpp     ./src/controller/oprations/*.cpp)
-file(GLOB OprationsHpp     ./src/controller/oprations/*.hpp)
+file(GLOB UserControllersHeaders   ./src/controller/user/*.h)
+file(GLOB UserControllersCpp       ./src/controller/user/*.cpp)
 
 
 file(GLOB DatabaseHeaders  ./src/database/*.h)
@@ -67,34 +65,30 @@ add_library(Request
   ${RequestCpp}
   ${RequestHpp}
 
-  ${DeleteHeaders}
-  ${DeleteCpp}
-  ${DeleteHpp}
+  ${DeleteCollectionHeaders}
+  ${DeleteCollectionCpp}
+  ${DeleteCollectionHpp}
 
 
-  ${FindHeaders}
-  ${FindCpp}
-  ${FindHpp}
+  ${FindCollectionHeaders}
+  ${FindCollectionCpp}
+  ${FindCollectionHpp}
+
+  ${GetInfoCollectionHeaders}
+  ${GetInfoCollectionCpp}
+  ${GetInfoCollectionHpp}
+
+  ${InsertCollectionHeaders}
+  ${InsertCollectionCpp}
+  ${InsertCollectionHpp}
+
+  ${UpdateCollectionHeaders}
+  ${UpdateCollectionCpp}
+  ${UpdateCollectionHpp}
 
 
-  ${GetInfoHeaders}
-  ${GetInfoCpp}
-  ${GetInfoHpp}
-
-
-  ${InsertHeaders}
-  ${InsertCpp}
-  ${InsertHpp}
-
-
-  ${UpdateHeaders}
-  ${UpdateCpp}
-  ${UpdateHpp}
-
-
-  ${OprationsHeaders}
-  ${OprationsCpp}
-  ${OprationsHpp}
+  ${UserControllersHeaders}
+  ${UserControllersCpp}
 
 
   ${DatabaseHeaders}

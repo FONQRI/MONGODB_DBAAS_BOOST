@@ -1,6 +1,9 @@
 #include "homepagecontroller.h"
-#include "src/database/collectionmethods.h"
+#include "src/database/collection_methods.h"
 #include "src/database/reply.h"
+
+// mongocxx
+#include <mongocxx/exception/exception.hpp>
 
 #include <iostream>
 #include <vector>
@@ -18,6 +21,34 @@ dbaas::core::home_page_controller::home_page_controller(
 
 	//	auto reply = dbaas::database::insert_many("userName", "dbname",
 	//						  "[{\"hello\":\"test\" }]");
-	std::string reply = "<head></head><body>home</body>";
+
+	// add headers
+	//	specifying content type as json
+	http::server::header content_type;
+	content_type.name = "Content-Type";
+	content_type.value = "text/html;";
+
+	//	specifying content charset as utf-8
+	http::server::header charset;
+	charset.name = "charset";
+	charset.value = "utf-8";
+
+	std::string reply =
+	"<!DOCTYPE html>"
+	"		<html>"
+	"	<body><head><style> *{    margin: 0;    padding: 0;}body{    "
+	"color: #eee;   "
+
+	"background: url('..images/page_bg.jpg') no-repeat center top #1b1b1c; "
+	"   font: 15pxCalibri,Arial,sans-serif;    border-top: 5px solid "
+	"#212121;}#page{    width:330px;    margin: 70px auto 100px;}#page h1{ "
+	"   text-indent: -9999px;   overflow: hidden;    height: 105px;    "
+	"background: "
+	"url('http://dc703.4shared.com/imgyxxU3nVM/s7/0.7548750905549155/"
+	"coming_soon.png') no-repeat;}</style> </head><body><divid=\"page\">   "
+	"     <h1>    "
+	"        Coming Soon</h1>    </div></body></html>";
+
+	std::clog << reply << std::endl;
 	rep.content.append(reply.c_str(), reply.size());
 }

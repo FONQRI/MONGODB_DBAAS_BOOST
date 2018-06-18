@@ -14,30 +14,41 @@
 #include <mongocxx/stdx.hpp>
 #include <mongocxx/uri.hpp>
 
+// delete controllers
+#include "src/controller/collection/delete/delete_many.h"
+#include "src/controller/collection/delete/delete_one.h"
+#include "src/controller/collection/delete/find_one_and_delete.h"
+
+// find controllers
+#include "src/controller/collection/find/aggregate.h"
+#include "src/controller/collection/find/find.h"
+#include "src/controller/collection/find/find_one.h"
+
+// get info controllers
+#include "src/controller/collection/get_info/count.h"
+#include "src/controller/collection/get_info/list_indexes.h"
+#include "src/controller/collection/get_info/name.h"
+
+// insert controllers
+#include "src/controller/collection/insert/insert_many.h"
+#include "src/controller/collection/insert/insert_one.h"
+
+// update controllers
+#include "src/controller/collection/update/create_index.h"
+#include "src/controller/collection/update/distinct.h"
+#include "src/controller/collection/update/find_one_and_replace.h"
+#include "src/controller/collection/update/find_one_and_update.h"
+#include "src/controller/collection/update/update_many.h"
+#include "src/controller/collection/update/update_one.h"
+
+// user controllers
+#include "src/controller/user/create_user.h"
+
+// init database
+#include "src/database/database_init_values.h"
+
 // TODO remove test code
 #include "src/database/password.h"
-
-#include "src/controller/delete/delete_many.h"
-#include "src/controller/delete/delete_one.h"
-#include "src/controller/delete/find_one_and_delete.h"
-
-#include "src/controller/find/aggregate.h"
-#include "src/controller/find/find.h"
-#include "src/controller/find/find_one.h"
-
-#include "src/controller/get_info/count.h"
-#include "src/controller/get_info/list_indexes.h"
-#include "src/controller/get_info/name.h"
-
-#include "src/controller/insert/insert_many.h"
-#include "src/controller/insert/insert_one.h"
-
-#include "src/controller/update/create_index.h"
-#include "src/controller/update/distinct.h"
-#include "src/controller/update/find_one_and_replace.h"
-#include "src/controller/update/find_one_and_update.h"
-#include "src/controller/update/update_many.h"
-#include "src/controller/update/update_one.h"
 
 /**
  * @brief controller	: a function for controller mapping
@@ -59,8 +70,11 @@ function_mapper controller_mapper;
 
 int main(int argc, char *argv[])
 {
-	// init controller map
+	// database init
+	mongocxx::instance inst{};
+	dbaas::database::initialize();
 
+	// init controller map
 	// find
 	controller_mapper["find"] = dbaas::core::find;
 	controller_mapper["find_one"] = dbaas::core::find_one;
@@ -88,8 +102,8 @@ int main(int argc, char *argv[])
 	controller_mapper["find_one_and_replace"] =
 	dbaas::core::find_one_and_replace;
 
-	mongocxx::instance inst{};
-	dbaas::database::password::create_key("dbname");
+	// user
+	controller_mapper["create_user"] = dbaas::core::create_user;
 
 	try {
 		// Check command line arguments.
@@ -122,7 +136,7 @@ int main(int argc, char *argv[])
 		// Run the server.
 		io_service.run();
 	}
-	catch (std::exception &e) {
+	catch (const std::exception &e) {
 		std::cerr << "exception: " << e.what() << "\n";
 	}
 
