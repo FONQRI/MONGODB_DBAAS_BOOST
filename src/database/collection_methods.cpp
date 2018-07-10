@@ -116,7 +116,7 @@ std::string dbaas::database::delete_many(
 	catch (const mongocxx::exception &e) {
 
 		// create json from error
-		return reply::error(e.what());
+		return reply::database_error(e.what());
 	}
 }
 
@@ -224,7 +224,7 @@ std::string dbaas::database::delete_one(
 	catch (const mongocxx::exception &e) {
 
 		// create json from error
-		return reply::error(e.what());
+		return reply::database_error(e.what());
 	}
 }
 
@@ -349,7 +349,7 @@ std::string dbaas::database::find_one_and_delete(
 	catch (const mongocxx::exception &e) {
 
 		// create json from error
-		return reply::error(e.what());
+		return reply::database_error(e.what());
 	}
 }
 
@@ -416,7 +416,7 @@ std::string dbaas::database::find(
 	}
 	catch (const mongocxx::exception &e) {
 		// make error json
-		return reply::error(e.what());
+		return reply::database_error(e.what());
 	}
 }
 
@@ -471,7 +471,7 @@ std::string dbaas::database::find_one(
 	}
 	catch (const mongocxx::exception &e) {
 		// create json from error
-		return reply::error(e.what());
+		return reply::database_error(e.what());
 	}
 }
 
@@ -513,7 +513,7 @@ std::string dbaas::database::count(std::string username,
 	}
 	catch (const mongocxx::exception &e) {
 		// make error json
-		return reply::error(e.what());
+		return reply::database_error(e.what());
 	}
 }
 
@@ -620,7 +620,7 @@ std::string dbaas::database::insert_many(
 	}
 	catch (const mongocxx::exception &e) {
 		// make error json
-		return reply::error(e.what());
+		return reply::database_error(e.what());
 	}
 }
 
@@ -728,7 +728,7 @@ std::string dbaas::database::insert_one(
 	}
 	catch (const mongocxx::exception &e) {
 		// make error json
-		return reply::error(e.what());
+		return reply::database_error(e.what());
 	}
 }
 
@@ -862,7 +862,7 @@ std::string dbaas::database::find_one_and_replace(
 	catch (const mongocxx::exception &e) {
 
 		// create json from error
-		return reply::error(e.what());
+		return reply::database_error(e.what());
 	}
 }
 
@@ -992,7 +992,7 @@ std::string dbaas::database::find_one_and_update(
 	catch (const mongocxx::exception &e) {
 
 		// create json from error
-		return reply::error(e.what());
+		return reply::database_error(e.what());
 	}
 }
 
@@ -1114,7 +1114,7 @@ std::string dbaas::database::update_many(
 	catch (const mongocxx::exception &e) {
 
 		// create json from error
-		return reply::error(e.what());
+		return reply::database_error(e.what());
 	}
 }
 
@@ -1235,7 +1235,7 @@ std::string dbaas::database::update_one(
 	catch (const mongocxx::exception &e) {
 
 		// create json from error
-		return reply::error(e.what());
+		return reply::database_error(e.what());
 	}
 }
 
@@ -1262,7 +1262,7 @@ std::string dbaas::database::drop(std::string username,
 	catch (const mongocxx::exception &e) {
 
 		// create json from error
-		return reply::error(e.what());
+		return reply::database_error(e.what());
 	}
 }
 
@@ -1466,7 +1466,7 @@ std::string dbaas::database::create_index(
 	catch (const mongocxx::exception &e) {
 
 		// create json from error
-		return reply::error(e.what());
+		return reply::database_error(e.what());
 	}
 }
 
@@ -1494,7 +1494,7 @@ std::string dbaas::database::name(std::string username,
 	}
 	catch (const mongocxx::exception &e) {
 		// make error json
-		return reply::error(e.what());
+		return reply::database_error(e.what());
 	}
 }
 
@@ -1528,7 +1528,7 @@ std::string dbaas::database::list_indexes(std::string username,
 	}
 	catch (const mongocxx::exception &e) {
 		// make error json
-		return reply::error(e.what());
+		return reply::database_error(e.what());
 	}
 }
 
@@ -1572,7 +1572,7 @@ dbaas::database::distinct(std::string username, std::string database_name,
 	}
 	catch (const mongocxx::exception &e) {
 		// make error json
-		return reply::error(e.what());
+		return reply::database_error(e.what());
 	}
 }
 
@@ -1833,6 +1833,6 @@ std::string dbaas::database::aggregate(
 	}
 	catch (const mongocxx::exception &e) {
 		// make error json
-		return reply::error(e.what());
+		return reply::database_error(e.what());
 	}
 }

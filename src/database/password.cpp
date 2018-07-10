@@ -1,19 +1,21 @@
 #include "password.h"
+#include "src/database/reply.h"
 
-std::string dbaas::database::password::create_key(std::string username)
+#include <iostream>
+
+bool dbaas::database::password::m_check_key(std::string key, std::string &reply,
+						std::string function_name)
 {
-	// TODO [1]get id from db and use as key
-	key_mapper["key"] = username;
-	return username;
+	std::clog << function_name << std::endl;
+	reply = "dbname";
+
+	if (reply != "") {
+		return true;
+	}
+	else {
+		reply = dbaas::database::reply::client_key_not_found(key);
+		return false;
+	}
+
+	return false;
 }
-
-std::string dbaas::database::password::check_key(std::string key)
-{
-	return key_mapper[key];
-}
-
-// private for private members
-dbaas::database::password::password() {}
-
-// init static members
-std::map<std::string, std::string> dbaas::database::password::key_mapper;

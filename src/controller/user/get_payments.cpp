@@ -1,10 +1,10 @@
 // header
-#include "drop.h"
+#include "get_payments.h"
 
 // internal
-#include "src/database/collection_methods.h"
 #include "src/database/password.h"
 #include "src/database/reply.h"
+#include "src/database/user_methods.h"
 
 // boost
 #include <boost/optional.hpp>
@@ -13,12 +13,17 @@
 #include <mongocxx/exception/exception.hpp>
 
 // std
+#include <algorithm>
+#include <ctime>
+#include <iomanip>
 #include <iostream>
-#include <string>
+#include <sstream>
 #include <vector>
 
-void drop(http::server::reply &rep, http::server::request request)
+void dbaas::core::get_payments(http::server::reply &rep,
+				   http::server::request request)
 {
+
 	// add headers
 	//	specifying content type as json
 	http::server::header content_type;
@@ -41,13 +46,13 @@ void drop(http::server::reply &rep, http::server::request request)
 			// get username of request
 			std::string username{""};
 			// get client key of request
-			std::string client_key{""};
+			std::string password{""};
 			for (auto &header : request.headers) {
 				if (header.name == "username") {
 					username = header.value;
 				}
-				else if (header.name == "client_key") {
-					client_key = header.value;
+				else if (header.name == "password") {
+					password = header.value;
 				}
 			}
 			if (username.empty()) {
@@ -57,35 +62,22 @@ void drop(http::server::reply &rep, http::server::request request)
 				rep.content.append(reply.c_str(), reply.size());
 				return;
 			}
-			else if (client_key.empty()) {
+			else if (password.empty()) {
 				std::string reply =
 				dbaas::database::reply::missing_item_error(
-					"client_key");
+					"password");
 				rep.content.append(reply.c_str(), reply.size());
 				return;
 			}
 
-			// get database name and check client_key access
-			std::string database_name{};
-			std::string check_key_reply;
-			if (!dbaas::database::password::check_key(
-				client_key, check_key_reply)) {
-				rep.content.append(check_key_reply.c_str(),
-						   check_key_reply.size());
-				return;
-			}
-			else {
-				database_name = check_key_reply;
-			}
-
-			// drop collection and return reoly
-			auto reply = dbaas::database::drop(username, database_name);
+			// get reply from database
+			auto reply =
+			dbaas::database::get_payments(username, password);
 
 			// write reply
 			rep.content.append(reply.c_str(), reply.size());
 		}
 		else {
-
 			// if request isn't post method
 			std::string reply =
 			dbaas::database::reply::http_error("send post method");

@@ -15,12 +15,12 @@
 #include <iostream>
 
 using bsoncxx::builder::basic::kvp;
+using bsoncxx::builder::basic::make_document;
 
 // TODO add indexes
 bool dbaas::database::initialize()
 {
 
-	dbaas::database::password::create_key("dbname");
 	//	dbaas::database::database_urls_and_ports = database_urls_and_ports;
 
 	create_indexes();
@@ -32,9 +32,11 @@ bool dbaas::database::create_indexes()
 	auto index_document = bsoncxx::builder::basic::document{};
 	auto index_document_phone_number = bsoncxx::builder::basic::document{};
 	auto index_document_email = bsoncxx::builder::basic::document{};
+	auto index_document_key = bsoncxx::builder::basic::document{};
 	index_document.append(kvp("username", 1));
 	index_document_phone_number.append(kvp("primary_phone_number", 1));
 	index_document_email.append(kvp("primary_email", 1));
+	index_document_key.append(kvp("keys.name", 1));
 
 	// create connection
 	mongocxx::client connection{mongocxx::uri{}};
@@ -53,6 +55,7 @@ bool dbaas::database::create_indexes()
 	collection.create_index(index_document.view(), options);
 	collection.create_index(index_document_phone_number.view(), options);
 	collection.create_index(index_document_email.view(), options);
+	collection.create_index(index_document_key.view(), options);
 
 	return true;
 }

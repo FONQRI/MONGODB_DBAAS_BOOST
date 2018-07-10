@@ -136,7 +136,7 @@ void dbaas::core::create_user(http::server::reply &rep,
 
 			// get phone_numbers array of request
 			bsoncxx::array::view array;
-			std::vector<std::string> phone_numbers_array;
+			optional_string_array phone_numbers_array;
 			try {
 				array = request_document.view()["phone_numbers"]
 					.get_array()
@@ -144,7 +144,7 @@ void dbaas::core::create_user(http::server::reply &rep,
 
 				// document vector
 				for (auto &doc : array) {
-					phone_numbers_array.push_back(
+					phone_numbers_array.get().push_back(
 					doc.get_utf8().value.to_string());
 				}
 			}
@@ -169,7 +169,7 @@ void dbaas::core::create_user(http::server::reply &rep,
 
 			// get emails array of request
 			bsoncxx::array::view emails;
-			std::vector<std::string> emails_array;
+			optional_string_array emails_array;
 			try {
 				emails = request_document.view()["emails"]
 					 .get_array()
@@ -177,7 +177,7 @@ void dbaas::core::create_user(http::server::reply &rep,
 
 				// document vector
 				for (auto &doc : emails) {
-					emails_array.push_back(
+					emails_array.get().push_back(
 					doc.get_utf8().value.to_string());
 				}
 			}
@@ -200,16 +200,21 @@ void dbaas::core::create_user(http::server::reply &rep,
 				}
 			}
 
-			if (std::find(phone_numbers_array.begin(),
-					  phone_numbers_array.end(),
+			// check if primary_phone_number is in array
+			if (std::find(phone_numbers_array.get().begin(),
+					  phone_numbers_array.get().end(),
 					  primary_phone_number) ==
-				phone_numbers_array.end()) {
-				phone_numbers_array.push_back(primary_phone_number);
+				phone_numbers_array.get().end()) {
+				phone_numbers_array.get().push_back(
+				primary_phone_number);
 			}
 
-			if (std::find(emails_array.begin(), emails_array.end(),
-					  primary_email) == emails_array.end()) {
-				emails_array.push_back(primary_email);
+			// check if primary_email is in array
+			if (std::find(emails_array.get().begin(),
+					  emails_array.get().end(),
+					  primary_email) ==
+				emails_array.get().end()) {
+				emails_array.get().push_back(primary_email);
 			}
 
 			// get reply from database
@@ -223,7 +228,7 @@ void dbaas::core::create_user(http::server::reply &rep,
 		else {
 			// if request isn't post method
 			std::string reply =
-			dbaas::database::reply::error("send post method");
+			dbaas::database::reply::http_error("send post method");
 
 			// write reply
 			rep.content.append(reply.c_str(), reply.size());
@@ -232,7 +237,8 @@ void dbaas::core::create_user(http::server::reply &rep,
 	catch (std::exception &e) {
 
 		// if execption happend in getting values or parsing json
-		std::string reply = dbaas::database::reply::error(e.what());
+		std::string reply =
+		dbaas::database::reply::wrong_request_content_type(e.what());
 
 		// write reply
 		rep.content.append(reply.c_str(), reply.size());

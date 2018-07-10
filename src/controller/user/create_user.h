@@ -7,8 +7,7 @@
 namespace dbaas {
 namespace core {
 /**
-* @brief create_user	: gets request content json and prepare it for
-* create_user function in database namespace
+* @brief create_user	: create json for create_user of user database functions
 * @param rep			: reply of http
 * @param request		: request of http
 */

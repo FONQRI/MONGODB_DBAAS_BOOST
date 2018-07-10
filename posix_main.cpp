@@ -42,6 +42,7 @@
 #include "src/controller/collection/update/update_one.h"
 
 // user controllers
+#include "src/controller/user/create_key.h"
 #include "src/controller/user/create_user.h"
 
 // init database
@@ -104,6 +105,7 @@ int main(int argc, char *argv[])
 
 	// user
 	controller_mapper["create_user"] = dbaas::core::create_user;
+	controller_mapper["create_key"] = dbaas::core::create_key;
 
 	try {
 		// Check command line arguments.

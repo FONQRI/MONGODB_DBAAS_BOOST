@@ -1,10 +1,10 @@
 // header
-#include "count.h"
+#include "delete_user_key.h"
 
 // internal
-#include "src/database/collection_methods.h"
 #include "src/database/password.h"
 #include "src/database/reply.h"
+#include "src/database/user_methods.h"
 
 // boost
 #include <boost/optional.hpp>
@@ -13,10 +13,15 @@
 #include <mongocxx/exception/exception.hpp>
 
 // std
+#include <algorithm>
+#include <ctime>
+#include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <vector>
 
-void dbaas::core::count(http::server::reply &rep, http::server::request request)
+void dbaas::core::delete_user_key(http::server::reply &rep,
+				  http::server::request request)
 {
 	// add headers
 	//	specifying content type as json
@@ -40,13 +45,13 @@ void dbaas::core::count(http::server::reply &rep, http::server::request request)
 			// get username of request
 			std::string username{""};
 			// get client key of request
-			std::string client_key{""};
+			std::string password{""};
 			for (auto &header : request.headers) {
 				if (header.name == "username") {
 					username = header.value;
 				}
-				else if (header.name == "client_key") {
-					client_key = header.value;
+				else if (header.name == "password") {
+					password = header.value;
 				}
 			}
 			if (username.empty()) {
@@ -56,37 +61,24 @@ void dbaas::core::count(http::server::reply &rep, http::server::request request)
 				rep.content.append(reply.c_str(), reply.size());
 				return;
 			}
-			else if (client_key.empty()) {
+			else if (password.empty()) {
 				std::string reply =
 				dbaas::database::reply::missing_item_error(
-					"client_key");
+					"password");
 				rep.content.append(reply.c_str(), reply.size());
 				return;
-			}
-
-			// get database name and check client_key access
-			std::string database_name{};
-			std::string check_key_reply;
-			if (!dbaas::database::password::check_key(
-				client_key, check_key_reply)) {
-				rep.content.append(check_key_reply.c_str(),
-						   check_key_reply.size());
-				return;
-			}
-			else {
-				database_name = check_key_reply;
 			}
 
 			// convert content to json
 			bsoncxx::document::value request_document =
 			bsoncxx::from_json(request.content);
 
-			// get query document of request
-			bsoncxx::types::b_document query;
-
+			// name
+			std::string name;
 			try {
-				query =
-				request_document.view()["query"].get_document();
+				name = request_document.view()["name"]
+					   .get_utf8()
+					   .value.to_string();
 			}
 			catch (std::exception &e) {
 
@@ -94,7 +86,7 @@ void dbaas::core::count(http::server::reply &rep, http::server::request request)
 				if (strcmp(e.what(),
 					   "unset document::element") == 0) {
 					std::string reply = dbaas::database::reply::
-					missing_item_error("query");
+					missing_item_error("name");
 					rep.content.append(reply.c_str(),
 							   reply.size());
 				} // check if element type is wrong
@@ -103,68 +95,16 @@ void dbaas::core::count(http::server::reply &rep, http::server::request request)
 						"type k_document") == 0) {
 					std::string reply =
 					dbaas::database::reply::wrong_item_type(
-						"query");
+						"name");
 					rep.content.append(reply.c_str(),
 							   reply.size());
 				}
 				return;
 			}
 
-			// get limit from request document
-			boost::optional<size_t> limit_number;
-
-			try {
-				limit_number =
-				request_document.view()["limit_number"]
-					.get_int32();
-			}
-			catch (std::exception &e) {
-
-				// if element doesn't exist in request document
-				if (strcmp(e.what(),
-					   "unset document::element") == 0) {
-					// element is optional
-				} // check if element type is wrong
-				else if (strcmp(e.what(),
-						"expected element "
-						"type k_document") == 0) {
-					std::string reply =
-					dbaas::database::reply::wrong_item_type(
-						"limit_number");
-					rep.content.append(reply.c_str(),
-							   reply.size());
-					return;
-				}
-			}
-
-			// get skip from request document
-			boost::optional<size_t> skip;
-
-			try {
-				skip = request_document.view()["skip"].get_int32();
-			}
-			catch (std::exception &e) {
-
-				// if element doesn't exist in request document
-				if (strcmp(e.what(),
-					   "unset document::element") == 0) {
-					// element is optional
-				} // check if element type is wrong
-				else if (strcmp(e.what(),
-						"expected element "
-						"type k_document") == 0) {
-					std::string reply =
-					dbaas::database::reply::wrong_item_type(
-						"skip");
-					rep.content.append(reply.c_str(),
-							   reply.size());
-					return;
-				}
-			}
-
 			// get reply from database
-			std::string reply = dbaas::database::count(
-			username, database_name, query, limit_number, skip);
+			auto reply = dbaas::database::delete_user_key(
+			username, password, name);
 
 			// write reply
 			rep.content.append(reply.c_str(), reply.size());

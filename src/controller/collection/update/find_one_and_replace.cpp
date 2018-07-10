@@ -67,6 +67,19 @@ void dbaas::core::find_one_and_replace(http::server::reply &rep,
 				return;
 			}
 
+			// get database name and check client_key access
+			std::string database_name{};
+			std::string check_key_reply;
+			if (!dbaas::database::password::check_key(
+				client_key, check_key_reply)) {
+				rep.content.append(check_key_reply.c_str(),
+						   check_key_reply.size());
+				return;
+			}
+			else {
+				database_name = check_key_reply;
+			}
+
 			// convert content to json
 			bsoncxx::document::value request_document =
 			bsoncxx::from_json(request.content);
@@ -520,11 +533,10 @@ void dbaas::core::find_one_and_replace(http::server::reply &rep,
 
 			// get reply from database
 			auto reply = dbaas::database::find_one_and_replace(
-			username,
-			dbaas::database::password::check_key(client_key),
-			filter, replacement, projection, sort, collation,
-			acknowledge_level, tag, journal, majority, timeout,
-			nodes, max_time, upsert, bypass_document_validation);
+			username, database_name, filter, replacement,
+			projection, sort, collation, acknowledge_level, tag,
+			journal, majority, timeout, nodes, max_time, upsert,
+			bypass_document_validation);
 
 			// write reply
 			rep.content.append(reply.c_str(), reply.size());
@@ -532,7 +544,7 @@ void dbaas::core::find_one_and_replace(http::server::reply &rep,
 		else {
 			// if request isn't post method
 			std::string reply =
-			dbaas::database::reply::error("send post method");
+			dbaas::database::reply::http_error("send post method");
 
 			// write reply
 			rep.content.append(reply.c_str(), reply.size());
@@ -541,7 +553,8 @@ void dbaas::core::find_one_and_replace(http::server::reply &rep,
 	catch (std::exception &e) {
 
 		// if execption happend in getting values or parsing json
-		std::string reply = dbaas::database::reply::error(e.what());
+		std::string reply =
+		dbaas::database::reply::wrong_request_content_type(e.what());
 
 		// write reply
 		rep.content.append(reply.c_str(), reply.size());

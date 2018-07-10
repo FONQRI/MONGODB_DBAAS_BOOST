@@ -1,10 +1,10 @@
 // header
-#include "find.h"
+#include "update_user.h"
 
 // internal
-#include "src/database/collection_methods.h"
 #include "src/database/password.h"
 #include "src/database/reply.h"
+#include "src/database/user_methods.h"
 
 // boost
 #include <boost/optional.hpp>
@@ -13,10 +13,15 @@
 #include <mongocxx/exception/exception.hpp>
 
 // std
+#include <algorithm>
+#include <ctime>
+#include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <vector>
 
-void dbaas::core::find(http::server::reply &rep, http::server::request request)
+void dbaas::core::update_user(http::server::reply &rep,
+				  http::server::request request)
 {
 	// add headers
 	//	specifying content type as json
@@ -40,13 +45,13 @@ void dbaas::core::find(http::server::reply &rep, http::server::request request)
 			// get username of request
 			std::string username{""};
 			// get client key of request
-			std::string client_key{""};
+			std::string password{""};
 			for (auto &header : request.headers) {
 				if (header.name == "username") {
 					username = header.value;
 				}
-				else if (header.name == "client_key") {
-					client_key = header.value;
+				else if (header.name == "password") {
+					password = header.value;
 				}
 			}
 			if (username.empty()) {
@@ -56,183 +61,186 @@ void dbaas::core::find(http::server::reply &rep, http::server::request request)
 				rep.content.append(reply.c_str(), reply.size());
 				return;
 			}
-			else if (client_key.empty()) {
+			else if (password.empty()) {
 				std::string reply =
 				dbaas::database::reply::missing_item_error(
-					"client_key");
+					"password");
 				rep.content.append(reply.c_str(), reply.size());
 				return;
-			}
-
-			// get database name and check client_key access
-			std::string database_name{};
-			std::string check_key_reply;
-			if (!dbaas::database::password::check_key(
-				client_key, check_key_reply)) {
-				rep.content.append(check_key_reply.c_str(),
-						   check_key_reply.size());
-				return;
-			}
-			else {
-				database_name = check_key_reply;
 			}
 
 			// convert content to json
 			bsoncxx::document::value request_document =
 			bsoncxx::from_json(request.content);
 
-			// get query document of request
-			bsoncxx::types::b_document query;
-
+			// update_username
+			optional_string update_username;
 			try {
-				query =
-				request_document.view()["query"].get_document();
+				update_username =
+				request_document.view()["update_username"]
+					.get_utf8()
+					.value.to_string();
 			}
 			catch (std::exception &e) {
 
 				// if element doesn't exist in request document
 				if (strcmp(e.what(),
 					   "unset document::element") == 0) {
-					std::string reply = dbaas::database::reply::
-					missing_item_error("query");
-					rep.content.append(reply.c_str(),
-							   reply.size());
+					// optional
 				} // check if element type is wrong
 				else if (strcmp(e.what(),
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
 					dbaas::database::reply::wrong_item_type(
-						"query");
-					rep.content.append(reply.c_str(),
-							   reply.size());
-				}
-				return;
-			}
-
-			// get projection document of request
-			boost::optional<bsoncxx::types::b_document> projection;
-
-			try {
-				projection = request_document.view()["projection"]
-						 .get_document();
-			}
-			catch (std::exception &e) {
-
-				// if element doesn't exist in request document
-				if (strcmp(e.what(),
-					   "unset document::element") == 0) {
-					// element is optional
-				} // check if element type is wrong
-				else if (strcmp(e.what(),
-						"expected element "
-						"type k_document") == 0) {
-					std::string reply =
-					dbaas::database::reply::wrong_item_type(
-						"projection");
+						"update_username");
 					rep.content.append(reply.c_str(),
 							   reply.size());
 					return;
 				}
 			}
 
-			// get sort document of request
-			boost::optional<bsoncxx::types::b_document> sort;
-
+			// update_password
+			optional_string update_password;
 			try {
-				sort =
-				request_document.view()["sort"].get_document();
+				update_password =
+				request_document.view()["update_password"]
+					.get_utf8()
+					.value.to_string();
 			}
 			catch (std::exception &e) {
 
 				// if element doesn't exist in request document
 				if (strcmp(e.what(),
 					   "unset document::element") == 0) {
-					// element is optional
+					// optional
 				} // check if element type is wrong
 				else if (strcmp(e.what(),
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
 					dbaas::database::reply::wrong_item_type(
-						"sort");
+						"update_password");
 					rep.content.append(reply.c_str(),
 							   reply.size());
 					return;
 				}
 			}
 
-			// get min document from request document
-			boost::optional<bsoncxx::types::b_document> min;
-
+			// primary_phone_number
+			optional_string primary_phone_number;
 			try {
-				min = request_document.view()["min"].get_document();
+				primary_phone_number =
+				request_document.view()["primary_phone_number"]
+					.get_utf8()
+					.value.to_string();
 			}
 			catch (std::exception &e) {
 
 				// if element doesn't exist in request document
 				if (strcmp(e.what(),
 					   "unset document::element") == 0) {
-					// element is optional
+					// optional
 				} // check if element type is wrong
 				else if (strcmp(e.what(),
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
 					dbaas::database::reply::wrong_item_type(
-						"min");
+						"primary_phone_number");
 					rep.content.append(reply.c_str(),
 							   reply.size());
 					return;
 				}
 			}
 
-			// get max document from request document
-			boost::optional<bsoncxx::types::b_document> max;
-
+			// primary_email
+			optional_string primary_email;
 			try {
-				max = request_document.view()["max"].get_document();
+				primary_email =
+				request_document.view()["primary_email"]
+					.get_utf8()
+					.value.to_string();
 			}
 			catch (std::exception &e) {
 
 				// if element doesn't exist in request document
 				if (strcmp(e.what(),
 					   "unset document::element") == 0) {
-					// element is optional
+					// optional
 				} // check if element type is wrong
 				else if (strcmp(e.what(),
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
 					dbaas::database::reply::wrong_item_type(
-						"max");
+						"primary_email");
 					rep.content.append(reply.c_str(),
 							   reply.size());
 					return;
 				}
 			}
 
-			// get limit from request document
-			boost::optional<size_t> limit_number;
-
+			// get emails array of request
+			bsoncxx::array::view emails;
+			optional_string_array emails_array;
 			try {
-				limit_number =
-				request_document.view()["limit_number"]
-					.get_int32();
+				emails = request_document.view()["emails"]
+					 .get_array()
+					 .value;
+
+				// document vector
+				for (auto &doc : emails) {
+					emails_array.get().push_back(
+					doc.get_utf8().value.to_string());
+				}
 			}
 			catch (std::exception &e) {
 
 				// if element doesn't exist in request document
 				if (strcmp(e.what(),
 					   "unset document::element") == 0) {
-					// element is optional
+					// optional
 				} // check if element type is wrong
 				else if (strcmp(e.what(),
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
 					dbaas::database::reply::wrong_item_type(
-						"limit_number");
+						"emails");
+					rep.content.append(reply.c_str(),
+							   reply.size());
+					return;
+				}
+			}
+
+			// get phone_numbers array of request
+			bsoncxx::array::view array;
+			optional_string_array phone_numbers;
+			try {
+				array = request_document.view()["phone_numbers"]
+					.get_array()
+					.value;
+
+				// document vector
+				for (auto &doc : array) {
+					phone_numbers.get().push_back(
+					doc.get_utf8().value.to_string());
+				}
+			}
+			catch (std::exception &e) {
+
+				// if element doesn't exist in request document
+				if (strcmp(e.what(),
+					   "unset document::element") == 0) {
+					// optional
+				} // check if element type is wrong
+				else if (strcmp(e.what(),
+						"expected element "
+						"type k_document") == 0) {
+					std::string reply =
+					dbaas::database::reply::wrong_item_type(
+						"phone_numbers");
 					rep.content.append(reply.c_str(),
 							   reply.size());
 					return;
@@ -240,9 +248,10 @@ void dbaas::core::find(http::server::reply &rep, http::server::request request)
 			}
 
 			// get reply from database
-			auto reply = dbaas::database::find(username, database_name,
-							   query, projection, sort,
-							   min, max, limit_number);
+			auto reply = dbaas::database::update_user(
+			username, password, update_username, update_password,
+			primary_phone_number, primary_email, phone_numbers,
+			emails_array);
 
 			// write reply
 			rep.content.append(reply.c_str(), reply.size());
