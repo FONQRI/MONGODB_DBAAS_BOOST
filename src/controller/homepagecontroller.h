@@ -2,14 +2,16 @@
 #define CONTROLLER_HOMEPAGECONTROLLER_H
 
 #include "src/server/reply.hpp"
+#include "src/server/request.hpp"
 #include <string>
 
-namespace iotdb {
+namespace dbaas {
 namespace core {
 
-class homePageController {
+class home_page_controller {
   public:
-	homePageController(http::server::reply &rep, std::string params);
+	home_page_controller(http::server::reply &rep,
+			 http::server::request request);
 };
 }
 }

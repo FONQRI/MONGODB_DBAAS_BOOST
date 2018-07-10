@@ -17,9 +17,39 @@ file(GLOB RequestHeaders ./src/controller/*.h)
 file(GLOB RequestCpp ./src/controller/*.cpp)
 file(GLOB RequestHpp ./src/controller/*.hpp)
 
-file(GLOB DatabaseHeaders ./src/database/*.h)
-file(GLOB DatabaseCpp ./src/database/*.cpp)
-file(GLOB DatabaseHpp ./src/database/*.hpp)
+#************************
+
+file(GLOB DeleteCollectionHeaders   ./src/controller/collection/delete/*.h)
+file(GLOB DeleteCollectionCpp       ./src/controller/collection/delete/*.cpp)
+file(GLOB DeleteCollectionHpp       ./src/controller/collection/delete/*.hpp)
+
+
+file(GLOB FindCollectionHeaders     ./src/controller/collection/find/*.h)
+file(GLOB FindCollectionCpp         ./src/controller/collection/find/*.cpp)
+file(GLOB FindCollectionHpp         ./src/controller/collection/find/*.hpp)
+
+
+file(GLOB GetInfoCollectionHeaders  ./src/controller/collection/get_info/*.h)
+file(GLOB GetInfoCollectionCpp      ./src/controller/collection/get_info/*.cpp)
+file(GLOB GetInfoCollectionHpp      ./src/controller/collection/get_info/*.hpp)
+
+
+file(GLOB InsertCollectionHeaders   ./src/controller/collection/insert/*.h)
+file(GLOB InsertCollectionCpp       ./src/controller/collection/insert/*.cpp)
+file(GLOB InsertCollectionHpp       ./src/controller/collection/insert/*.hpp)
+
+
+file(GLOB UpdateCollectionHeaders   ./src/controller/collection/update/*.h)
+file(GLOB UpdateCollectionCpp       ./src/controller/collection/update/*.cpp)
+file(GLOB UpdateCollectionHpp       ./src/controller/collection/update/*.hpp)
+
+file(GLOB UserControllersHeaders   ./src/controller/user/*.h)
+file(GLOB UserControllersCpp       ./src/controller/user/*.cpp)
+
+
+file(GLOB DatabaseHeaders  ./src/database/*.h)
+file(GLOB DatabaseCpp      ./src/database/*.cpp)
+file(GLOB DatabaseHpp      ./src/database/*.hpp)
 
 
 #library
@@ -30,9 +60,41 @@ add_library(Server
   )
 
 add_library(Request
+
   ${RequestHeaders}
   ${RequestCpp}
   ${RequestHpp}
+
+  ${DeleteCollectionHeaders}
+  ${DeleteCollectionCpp}
+  ${DeleteCollectionHpp}
+
+
+  ${FindCollectionHeaders}
+  ${FindCollectionCpp}
+  ${FindCollectionHpp}
+
+  ${GetInfoCollectionHeaders}
+  ${GetInfoCollectionCpp}
+  ${GetInfoCollectionHpp}
+
+  ${InsertCollectionHeaders}
+  ${InsertCollectionCpp}
+  ${InsertCollectionHpp}
+
+  ${UpdateCollectionHeaders}
+  ${UpdateCollectionCpp}
+  ${UpdateCollectionHpp}
+
+
+  ${UserControllersHeaders}
+  ${UserControllersCpp}
+
+
+  ${DatabaseHeaders}
+  ${DatabaseCpp}
+  ${DatabaseHpp}
+
   )
 
 add_library(Database
@@ -77,12 +139,12 @@ if(Boost_FOUND)
     Database
     )
 
-   target_link_libraries(Database
-      Boost::date_time
-      Boost::iostreams
-     ${LIBBSONCXX_LIBRARIES}
-     ${LIBMONGOCXX_LIBRARIES}
-     )
+  target_link_libraries(Database
+    Boost::date_time
+    Boost::iostreams
+    ${LIBBSONCXX_LIBRARIES}
+    ${LIBMONGOCXX_LIBRARIES}
+    )
 endif(Boost_FOUND)
 
 set(Boost_USE_STATIC_LIBS        ON) # only find static libs

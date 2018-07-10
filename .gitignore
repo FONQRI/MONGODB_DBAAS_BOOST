@@ -34,3 +34,12 @@
 #cmake
 *.user
 *.txt.user
+
+#doc
+doc/*
+Doxyfile
+
+#qt creator
+*.autosave
+
+
