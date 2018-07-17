@@ -6,7 +6,7 @@
 #include <string>
 
 namespace dbaas {
-namespace core {
+namespace controller {
 
 /**
 * @brief update_user: create json for update_user of user database functions
@@ -15,7 +15,7 @@ namespace core {
 */
 void update_user(http::server::reply &rep, http::server::request request);
 
-} // core
+} // controller
 } // dbaas
 
 #endif // CONTROLLER_UPDATE_USER_H

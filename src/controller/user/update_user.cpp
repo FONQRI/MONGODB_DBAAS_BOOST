@@ -2,9 +2,9 @@
 #include "update_user.h"
 
 // internal
-#include "src/database/password.h"
-#include "src/database/reply.h"
+#include "src/core/reply.h"
 #include "src/database/user_methods.h"
+#include "src/security/password.h"
 
 // boost
 #include <boost/optional.hpp>
@@ -20,8 +20,8 @@
 #include <sstream>
 #include <vector>
 
-void dbaas::core::update_user(http::server::reply &rep,
-				  http::server::request request)
+void dbaas::controller::update_user(http::server::reply &rep,
+					http::server::request request)
 {
 	// add headers
 	//	specifying content type as json
@@ -56,15 +56,13 @@ void dbaas::core::update_user(http::server::reply &rep,
 			}
 			if (username.empty()) {
 				std::string reply =
-				dbaas::database::reply::missing_item_error(
-					"username");
+				core::reply::missing_item_error("username");
 				rep.content.append(reply.c_str(), reply.size());
 				return;
 			}
 			else if (password.empty()) {
 				std::string reply =
-				dbaas::database::reply::missing_item_error(
-					"password");
+				core::reply::missing_item_error("password");
 				rep.content.append(reply.c_str(), reply.size());
 				return;
 			}
@@ -92,7 +90,7 @@ void dbaas::core::update_user(http::server::reply &rep,
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
+					core::reply::wrong_item_type(
 						"update_username");
 					rep.content.append(reply.c_str(),
 							   reply.size());
@@ -119,7 +117,7 @@ void dbaas::core::update_user(http::server::reply &rep,
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
+					core::reply::wrong_item_type(
 						"update_password");
 					rep.content.append(reply.c_str(),
 							   reply.size());
@@ -146,7 +144,7 @@ void dbaas::core::update_user(http::server::reply &rep,
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
+					core::reply::wrong_item_type(
 						"primary_phone_number");
 					rep.content.append(reply.c_str(),
 							   reply.size());
@@ -173,7 +171,7 @@ void dbaas::core::update_user(http::server::reply &rep,
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
+					core::reply::wrong_item_type(
 						"primary_email");
 					rep.content.append(reply.c_str(),
 							   reply.size());
@@ -188,6 +186,7 @@ void dbaas::core::update_user(http::server::reply &rep,
 				emails = request_document.view()["emails"]
 					 .get_array()
 					 .value;
+				emails_array = std::vector<std::string>();
 
 				// document vector
 				for (auto &doc : emails) {
@@ -206,8 +205,7 @@ void dbaas::core::update_user(http::server::reply &rep,
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
-						"emails");
+					core::reply::wrong_item_type("emails");
 					rep.content.append(reply.c_str(),
 							   reply.size());
 					return;
@@ -221,6 +219,7 @@ void dbaas::core::update_user(http::server::reply &rep,
 				array = request_document.view()["phone_numbers"]
 					.get_array()
 					.value;
+				phone_numbers = std::vector<std::string>();
 
 				// document vector
 				for (auto &doc : array) {
@@ -239,7 +238,7 @@ void dbaas::core::update_user(http::server::reply &rep,
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
+					core::reply::wrong_item_type(
 						"phone_numbers");
 					rep.content.append(reply.c_str(),
 							   reply.size());
@@ -259,7 +258,7 @@ void dbaas::core::update_user(http::server::reply &rep,
 		else {
 			// if request isn't post method
 			std::string reply =
-			dbaas::database::reply::http_error("send post method");
+			core::reply::http_error("send post method");
 
 			// write reply
 			rep.content.append(reply.c_str(), reply.size());
@@ -269,7 +268,7 @@ void dbaas::core::update_user(http::server::reply &rep,
 
 		// if execption happend in getting values or parsing json
 		std::string reply =
-		dbaas::database::reply::wrong_request_content_type(e.what());
+		core::reply::wrong_request_content_type(e.what());
 
 		// write reply
 		rep.content.append(reply.c_str(), reply.size());

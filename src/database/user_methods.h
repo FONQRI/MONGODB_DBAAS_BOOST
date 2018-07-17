@@ -41,7 +41,8 @@ namespace database {
 * database
 * @param phone_numbers			: optional phone numbers array
 * @param emails					: optional emails array
-* @return						: json that if creation was
+* @return						: json that if creation
+* was
 * successful or not
 */
 std::string create_user(std::string username, std::string password,
@@ -62,7 +63,8 @@ std::string create_user(std::string username, std::string password,
  * in database
  * @param phone_numbers			: optional phone numbers array
  * @param emails				: optional emails array
- * @return 						: json that if update was successful or
+ * @return 						: json that if update was successful
+ * or
  * not
  */
 std::string
@@ -75,7 +77,8 @@ update_user(std::string username, std::string password,
  * @brief get_user	: get user struct from database
  * @param username	: username for finding user
  * @param password	: password for checking access
- * @return			: user in json if there is such user and failed json if
+ * @return			: user in json if there is such user and failed json
+ * if
  * there is no such user
  */
 std::string get_user(std::string username, std::string password);
@@ -97,41 +100,50 @@ std::string delete_user(std::string username, std::string password);
  * @param valid_request_per_day	: valid request per day for this user
  * @param valid_read_size		: valid read size in kb
  * @param valid_write_size		: valid write size in kb
- * @param access				: access array that specifies key access to
+ * @param access				: access array that specifies key access
+ * to
  * collections api functions
- * @return						: key creation was successful or
+ * @return						: key creation was successful
+ * or
  * not
  */
 std::string create_key(std::string username, std::string password,
-			   std::string name, int valid_request_per_day,
-			   int valid_read_size, int valid_write_size,
-			   std::vector<std::string> access);
+			   std::string name, std::string database_name,
+			   int valid_request_per_day, int valid_read_size,
+			   int valid_write_size, std::vector<std::string> access);
 
 /**
  * @brief update_key			: update given properties in json
  * @param username				: username for finding user
  * @param password				: password for check access
  * @param name					: name of key
- * @param update_name			: optional new name for key if needs to be
+ * @param update_name			: optional new name for key if needs to
+ * be
  * update
  * @param valid_request_per_day	: optional valid_request_per_day for key if
  * needs to be update
- * @param request_per_day		: optional request_per_day if needs to be
+ * @param request_per_day		: optional request_per_day if needs to
+ * be
  * update
- * @param valid_read_size		: optional valid_read_size if needs to be
+ * @param valid_read_size		: optional valid_read_size if needs to
+ * be
  * update
- * @param valid_write_size		: optional valid_write_size if needs to be
+ * @param valid_write_size		: optional valid_write_size if needs to
+ * be
  * update
- * @param access				: optional access array if needs to be
+ * @param access				: optional access array if needs to
+ * be
  * update
- * @return 						: update was successful or
+ * @return 						: update was successful
+ * or
  * not
  */
 std::string
 update_key(std::string username, std::string password, std::string name,
-	   optional_string update_name, optional_int valid_request_per_day,
-	   optional_int request_per_day, optional_int valid_read_size,
-	   optional_int valid_write_size, optional_string_array access);
+	   optional_string update_name, optional_string database_name,
+	   optional_int valid_request_per_day, optional_int request_per_day,
+	   optional_int valid_read_size, optional_int valid_write_size,
+	   optional_string_array access);
 
 /**
  * @brief get_user_key	: internal function user can not get access to key by
@@ -180,7 +192,8 @@ std::string delete_user_keys(std::string username, std::string password);
  * @param request_numbers_per_day	: request_numbers_per_day of payment
  * @param read_size					: read_size of payment
  * @param write_size				: write_size of payment
- * @return 							: was successful or
+ * @return 							: was successful
+ * or
  * not
  */
 std::string create_payment(std::string username, std::string password,

@@ -5,7 +5,7 @@
 
 #include <string>
 namespace dbaas {
-namespace core {
+namespace controller {
 
 /**
 * @brief update_one	: gets request content json and prepare it for
@@ -14,7 +14,7 @@ namespace core {
 * @param request		: request of http
 */
 void update_one(http::server::reply &rep, http::server::request request);
-} // core
+} // controller
 } // dbaas
 
 #endif // CONTROLLER_UPDATE_ONE_H

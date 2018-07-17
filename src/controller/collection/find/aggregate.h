@@ -6,8 +6,8 @@
 #include <string>
 
 namespace dbaas {
-namespace core {
+namespace controller {
 void aggregate(http::server::reply &rep, http::server::request request);
-} // core
+} // controller
 } // dbaas
 #endif // AGGREGATE_H

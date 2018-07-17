@@ -17,9 +17,9 @@ namespace password {
 /* TODO [2] check key check key for limitation of request numbers and
  database name*/
 
-bool m_check_key(std::string key, std::string &reply,
+bool m_check_key(std::string username, std::string key, std::string &reply,
 		 std::string function_name);
-#define check_key(x, y) m_check_key(x, y, __FUNCTION__)
+#define check_key(x, y, z) m_check_key(x, y, z, __FUNCTION__)
 };
 } // dbaas
 } // database

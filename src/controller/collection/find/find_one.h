@@ -6,7 +6,7 @@
 #include <string>
 
 namespace dbaas {
-namespace core {
+namespace controller {
 /**
 * @brief find_one	: gets request content json and prepare it for
 * find_one function in database namespace
@@ -14,6 +14,6 @@ namespace core {
 * @param request		: request of http
 */
 void find_one(http::server::reply &rep, http::server::request request);
-} // core
+} // controller
 } // dbaas
 #endif // CONTROLLER_FIND_ONE_CONTROLLER_H

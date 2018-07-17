@@ -6,7 +6,7 @@
 #include <string>
 
 namespace dbaas {
-namespace core {
+namespace controller {
 /**
 * @brief name	: gets request name of collection
 * @param rep			: reply of http
@@ -14,6 +14,6 @@ namespace core {
 */
 void name(http::server::reply &rep, http::server::request request);
 
-} // core
+} // controller
 } // dbaas
 #endif // CONTROLLER_NAME_H

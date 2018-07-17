@@ -6,7 +6,7 @@
 #include <string>
 
 namespace dbaas {
-namespace core {
+namespace controller {
 /**
 * @brief count	: gets request content json and prepare it for
 * count function in database namespace
@@ -14,6 +14,6 @@ namespace core {
 * @param request		: request of http
 */
 void count(http::server::reply &rep, http::server::request request);
-} // core
+} // controller
 } // dbaas
 #endif // CONTROLLER_COUNT_H

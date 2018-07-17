@@ -43,13 +43,22 @@
 
 // user controllers
 #include "src/controller/user/create_key.h"
+#include "src/controller/user/create_payment.h"
 #include "src/controller/user/create_user.h"
+#include "src/controller/user/delete_user.h"
+#include "src/controller/user/delete_user_key.h"
+#include "src/controller/user/delete_user_keys.h"
+#include "src/controller/user/get_payments.h"
+#include "src/controller/user/get_user.h"
+#include "src/controller/user/get_user_keys.h"
+#include "src/controller/user/update_key.h"
+#include "src/controller/user/update_user.h"
 
 // init database
 #include "src/database/database_init_values.h"
 
 // TODO remove test code
-#include "src/database/password.h"
+#include "src/security/password.h"
 
 /**
  * @brief controller	: a function for controller mapping
@@ -77,35 +86,45 @@ int main(int argc, char *argv[])
 
 	// init controller map
 	// find
-	controller_mapper["find"] = dbaas::core::find;
-	controller_mapper["find_one"] = dbaas::core::find_one;
-	controller_mapper["aggregate"] = dbaas::core::aggregate;
+	controller_mapper["find"] = dbaas::controller::find;
+	controller_mapper["find_one"] = dbaas::controller::find_one;
+	controller_mapper["aggregate"] = dbaas::controller::aggregate;
 
 	// insert
-	controller_mapper["insert_one"] = dbaas::core::insert_one;
-	controller_mapper["insert_many"] = dbaas::core::insert_many;
+	controller_mapper["insert_one"] = dbaas::controller::insert_one;
+	controller_mapper["insert_many"] = dbaas::controller::insert_many;
 
 	// get_info
-	controller_mapper["count"] = dbaas::core::count;
-	controller_mapper["name"] = dbaas::core::name;
-	controller_mapper["list_indexes"] = dbaas::core::list_indexes;
+	controller_mapper["count"] = dbaas::controller::count;
+	controller_mapper["name"] = dbaas::controller::name;
+	controller_mapper["list_indexes"] = dbaas::controller::list_indexes;
 
 	// delete
-	controller_mapper["delete_one"] = dbaas::core::delete_one;
-	controller_mapper["delete_many"] = dbaas::core::delete_many;
-	controller_mapper["find_one_and_delete"] = dbaas::core::find_one_and_delete;
+	controller_mapper["delete_one"] = dbaas::controller::delete_one;
+	controller_mapper["delete_many"] = dbaas::controller::delete_many;
+	controller_mapper["find_one_and_delete"] =
+	dbaas::controller::find_one_and_delete;
 
 	// update
-	controller_mapper["update_one"] = dbaas::core::update_one;
-	controller_mapper["update_many"] = dbaas::core::update_many;
-	controller_mapper["create_index"] = dbaas::core::create_index;
-	controller_mapper["distinct"] = dbaas::core::distinct;
+	controller_mapper["update_one"] = dbaas::controller::update_one;
+	controller_mapper["update_many"] = dbaas::controller::update_many;
+	controller_mapper["create_index"] = dbaas::controller::create_index;
+	controller_mapper["distinct"] = dbaas::controller::distinct;
 	controller_mapper["find_one_and_replace"] =
-	dbaas::core::find_one_and_replace;
+	dbaas::controller::find_one_and_replace;
 
 	// user
-	controller_mapper["create_user"] = dbaas::core::create_user;
-	controller_mapper["create_key"] = dbaas::core::create_key;
+	controller_mapper["create_user"] = dbaas::controller::create_user;
+	controller_mapper["create_key"] = dbaas::controller::create_key;
+	controller_mapper["update_key"] = dbaas::controller::update_key;
+	controller_mapper["create_payment"] = dbaas::controller::create_payment;
+	controller_mapper["delete_user"] = dbaas::controller::delete_user;
+	controller_mapper["delete_user_key"] = dbaas::controller::delete_user_key;
+	controller_mapper["delete_user_keys"] = dbaas::controller::delete_user_keys;
+	controller_mapper["get_payments"] = dbaas::controller::get_payments;
+	controller_mapper["get_user"] = dbaas::controller::get_user;
+	controller_mapper["get_user_keys"] = dbaas::controller::get_user_keys;
+	controller_mapper["update_user"] = dbaas::controller::update_user;
 
 	try {
 		// Check command line arguments.

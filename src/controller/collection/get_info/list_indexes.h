@@ -6,14 +6,14 @@
 #include <string>
 
 namespace dbaas {
-namespace core {
+namespace controller {
 /**
 * @brief list_indexes	: gets list of indexes of collection
 * @param rep          : reply of http
 * @param request      : request of http
 */
 void list_indexes(http::server::reply &rep, http::server::request request);
-} // core
+} // controller
 } // dbaas
 
 #endif // LIST_INDEXES_H

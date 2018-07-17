@@ -1,6 +1,6 @@
 #include "homepagecontroller.h"
+#include "src/core/reply.h"
 #include "src/database/collection_methods.h"
-#include "src/database/reply.h"
 
 // mongocxx
 #include <mongocxx/exception/exception.hpp>

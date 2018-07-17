@@ -2,9 +2,9 @@
 #include "update_key.h"
 
 // internal
-#include "src/database/password.h"
-#include "src/database/reply.h"
+#include "src/core/reply.h"
 #include "src/database/user_methods.h"
+#include "src/security/password.h"
 
 // boost
 #include <boost/optional.hpp>
@@ -20,8 +20,8 @@
 #include <sstream>
 #include <vector>
 
-void dbaas::core::update_key(http::server::reply &rep,
-				 http::server::request request)
+void dbaas::controller::update_key(http::server::reply &rep,
+				   http::server::request request)
 {
 	// add headers
 	//	specifying content type as json
@@ -56,15 +56,13 @@ void dbaas::core::update_key(http::server::reply &rep,
 			}
 			if (username.empty()) {
 				std::string reply =
-				dbaas::database::reply::missing_item_error(
-					"username");
+				core::reply::missing_item_error("username");
 				rep.content.append(reply.c_str(), reply.size());
 				return;
 			}
 			else if (password.empty()) {
 				std::string reply =
-				dbaas::database::reply::missing_item_error(
-					"password");
+				core::reply::missing_item_error("password");
 				rep.content.append(reply.c_str(), reply.size());
 				return;
 			}
@@ -85,8 +83,8 @@ void dbaas::core::update_key(http::server::reply &rep,
 				// if element doesn't exist in request document
 				if (strcmp(e.what(),
 					   "unset document::element") == 0) {
-					std::string reply = dbaas::database::reply::
-					missing_item_error("name");
+					std::string reply =
+					core::reply::missing_item_error("name");
 					rep.content.append(reply.c_str(),
 							   reply.size());
 				} // check if element type is wrong
@@ -94,8 +92,7 @@ void dbaas::core::update_key(http::server::reply &rep,
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
-						"name");
+					core::reply::wrong_item_type("name");
 					rep.content.append(reply.c_str(),
 							   reply.size());
 				}
@@ -120,8 +117,35 @@ void dbaas::core::update_key(http::server::reply &rep,
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
+					core::reply::wrong_item_type(
 						"update_name");
+					rep.content.append(reply.c_str(),
+							   reply.size());
+					return;
+				}
+			}
+
+			// database_name
+			optional_string database_name;
+			try {
+				database_name =
+				request_document.view()["database_name"]
+					.get_utf8()
+					.value.to_string();
+			}
+			catch (std::exception &e) {
+
+				// if element doesn't exist in request document
+				if (strcmp(e.what(),
+					   "unset document::element") == 0) {
+					// optional
+				} // check if element type is wrong
+				else if (strcmp(e.what(),
+						"expected element "
+						"type k_document") == 0) {
+					std::string reply =
+					core::reply::wrong_item_type(
+						"database_name");
 					rep.content.append(reply.c_str(),
 							   reply.size());
 					return;
@@ -146,7 +170,7 @@ void dbaas::core::update_key(http::server::reply &rep,
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
+					core::reply::wrong_item_type(
 						"valid_request_per_day");
 					rep.content.append(reply.c_str(),
 							   reply.size());
@@ -172,7 +196,7 @@ void dbaas::core::update_key(http::server::reply &rep,
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
+					core::reply::wrong_item_type(
 						"request_per_day");
 					rep.content.append(reply.c_str(),
 							   reply.size());
@@ -198,7 +222,7 @@ void dbaas::core::update_key(http::server::reply &rep,
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
+					core::reply::wrong_item_type(
 						"valid_read_size");
 					rep.content.append(reply.c_str(),
 							   reply.size());
@@ -224,7 +248,7 @@ void dbaas::core::update_key(http::server::reply &rep,
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
+					core::reply::wrong_item_type(
 						"valid_write_size");
 					rep.content.append(reply.c_str(),
 							   reply.size());
@@ -240,7 +264,10 @@ void dbaas::core::update_key(http::server::reply &rep,
 					.get_array()
 					.value;
 
+				access = std::vector<std::string>();
+
 				// document vector
+
 				for (auto &doc : array) {
 					access.get().push_back(
 					doc.get_utf8().value.to_string());
@@ -257,8 +284,7 @@ void dbaas::core::update_key(http::server::reply &rep,
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
-						"access");
+					core::reply::wrong_item_type("access");
 					rep.content.append(reply.c_str(),
 							   reply.size());
 					return;
@@ -267,7 +293,7 @@ void dbaas::core::update_key(http::server::reply &rep,
 
 			// get reply from database
 			auto reply = dbaas::database::update_key(
-			username, password, name, update_name,
+			username, password, name, update_name, database_name,
 			valid_request_per_day, request_per_day, valid_read_size,
 			valid_write_size, access);
 
@@ -277,7 +303,7 @@ void dbaas::core::update_key(http::server::reply &rep,
 		else {
 			// if request isn't post method
 			std::string reply =
-			dbaas::database::reply::http_error("send post method");
+			core::reply::http_error("send post method");
 
 			// write reply
 			rep.content.append(reply.c_str(), reply.size());
@@ -287,7 +313,7 @@ void dbaas::core::update_key(http::server::reply &rep,
 
 		// if execption happend in getting values or parsing json
 		std::string reply =
-		dbaas::database::reply::wrong_request_content_type(e.what());
+		core::reply::wrong_request_content_type(e.what());
 
 		// write reply
 		rep.content.append(reply.c_str(), reply.size());

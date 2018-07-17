@@ -2,9 +2,9 @@
 #include "find.h"
 
 // internal
+#include "src/core/reply.h"
 #include "src/database/collection_methods.h"
-#include "src/database/password.h"
-#include "src/database/reply.h"
+#include "src/security/password.h"
 
 // boost
 #include <boost/optional.hpp>
@@ -16,7 +16,8 @@
 #include <iostream>
 #include <vector>
 
-void dbaas::core::find(http::server::reply &rep, http::server::request request)
+void dbaas::controller::find(http::server::reply &rep,
+				 http::server::request request)
 {
 	// add headers
 	//	specifying content type as json
@@ -51,15 +52,13 @@ void dbaas::core::find(http::server::reply &rep, http::server::request request)
 			}
 			if (username.empty()) {
 				std::string reply =
-				dbaas::database::reply::missing_item_error(
-					"username");
+				core::reply::missing_item_error("username");
 				rep.content.append(reply.c_str(), reply.size());
 				return;
 			}
 			else if (client_key.empty()) {
 				std::string reply =
-				dbaas::database::reply::missing_item_error(
-					"client_key");
+				core::reply::missing_item_error("client_key");
 				rep.content.append(reply.c_str(), reply.size());
 				return;
 			}
@@ -68,7 +67,7 @@ void dbaas::core::find(http::server::reply &rep, http::server::request request)
 			std::string database_name{};
 			std::string check_key_reply;
 			if (!dbaas::database::password::check_key(
-				client_key, check_key_reply)) {
+				username, client_key, check_key_reply)) {
 				rep.content.append(check_key_reply.c_str(),
 						   check_key_reply.size());
 				return;
@@ -93,8 +92,9 @@ void dbaas::core::find(http::server::reply &rep, http::server::request request)
 				// if element doesn't exist in request document
 				if (strcmp(e.what(),
 					   "unset document::element") == 0) {
-					std::string reply = dbaas::database::reply::
-					missing_item_error("query");
+					std::string reply =
+					core::reply::missing_item_error(
+						"query");
 					rep.content.append(reply.c_str(),
 							   reply.size());
 				} // check if element type is wrong
@@ -102,8 +102,7 @@ void dbaas::core::find(http::server::reply &rep, http::server::request request)
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
-						"query");
+					core::reply::wrong_item_type("query");
 					rep.content.append(reply.c_str(),
 							   reply.size());
 				}
@@ -128,7 +127,7 @@ void dbaas::core::find(http::server::reply &rep, http::server::request request)
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
+					core::reply::wrong_item_type(
 						"projection");
 					rep.content.append(reply.c_str(),
 							   reply.size());
@@ -154,8 +153,7 @@ void dbaas::core::find(http::server::reply &rep, http::server::request request)
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
-						"sort");
+					core::reply::wrong_item_type("sort");
 					rep.content.append(reply.c_str(),
 							   reply.size());
 					return;
@@ -179,8 +177,7 @@ void dbaas::core::find(http::server::reply &rep, http::server::request request)
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
-						"min");
+					core::reply::wrong_item_type("min");
 					rep.content.append(reply.c_str(),
 							   reply.size());
 					return;
@@ -204,8 +201,7 @@ void dbaas::core::find(http::server::reply &rep, http::server::request request)
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
-						"max");
+					core::reply::wrong_item_type("max");
 					rep.content.append(reply.c_str(),
 							   reply.size());
 					return;
@@ -231,7 +227,7 @@ void dbaas::core::find(http::server::reply &rep, http::server::request request)
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
+					core::reply::wrong_item_type(
 						"limit_number");
 					rep.content.append(reply.c_str(),
 							   reply.size());
@@ -250,7 +246,7 @@ void dbaas::core::find(http::server::reply &rep, http::server::request request)
 		else {
 			// if request isn't post method
 			std::string reply =
-			dbaas::database::reply::http_error("send post method");
+			core::reply::http_error("send post method");
 
 			// write reply
 			rep.content.append(reply.c_str(), reply.size());
@@ -260,7 +256,7 @@ void dbaas::core::find(http::server::reply &rep, http::server::request request)
 
 		// if execption happend in getting values or parsing json
 		std::string reply =
-		dbaas::database::reply::wrong_request_content_type(e.what());
+		core::reply::wrong_request_content_type(e.what());
 
 		// write reply
 		rep.content.append(reply.c_str(), reply.size());

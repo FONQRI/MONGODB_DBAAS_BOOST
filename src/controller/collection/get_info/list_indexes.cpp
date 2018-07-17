@@ -2,9 +2,9 @@
 #include "list_indexes.h"
 
 // internal
+#include "src/core/reply.h"
 #include "src/database/collection_methods.h"
-#include "src/database/password.h"
-#include "src/database/reply.h"
+#include "src/security/password.h"
 
 // boost
 #include <boost/optional.hpp>
@@ -16,8 +16,8 @@
 #include <iostream>
 #include <vector>
 
-void dbaas::core::list_indexes(http::server::reply &rep,
-				   http::server::request request)
+void dbaas::controller::list_indexes(http::server::reply &rep,
+					 http::server::request request)
 {
 	// add headers
 	//	specifying content type as json
@@ -53,15 +53,13 @@ void dbaas::core::list_indexes(http::server::reply &rep,
 			}
 			if (username.empty()) {
 				std::string reply =
-				dbaas::database::reply::missing_item_error(
-					"username");
+				core::reply::missing_item_error("username");
 				rep.content.append(reply.c_str(), reply.size());
 				return;
 			}
 			else if (client_key.empty()) {
 				std::string reply =
-				dbaas::database::reply::missing_item_error(
-					"client_key");
+				core::reply::missing_item_error("client_key");
 				rep.content.append(reply.c_str(), reply.size());
 				return;
 			}
@@ -70,7 +68,7 @@ void dbaas::core::list_indexes(http::server::reply &rep,
 			std::string database_name{};
 			std::string check_key_reply;
 			if (!dbaas::database::password::check_key(
-				client_key, check_key_reply)) {
+				username, client_key, check_key_reply)) {
 				rep.content.append(check_key_reply.c_str(),
 						   check_key_reply.size());
 				return;
@@ -89,7 +87,7 @@ void dbaas::core::list_indexes(http::server::reply &rep,
 		else {
 			// if request isn't post method
 			std::string reply =
-			dbaas::database::reply::http_error("send post method");
+			core::reply::http_error("send post method");
 
 			// write reply
 			rep.content.append(reply.c_str(), reply.size());
@@ -99,7 +97,7 @@ void dbaas::core::list_indexes(http::server::reply &rep,
 
 		// if execption happend in getting values or parsing json
 		std::string reply =
-		dbaas::database::reply::wrong_request_content_type(e.what());
+		core::reply::wrong_request_content_type(e.what());
 
 		// write reply
 		rep.content.append(reply.c_str(), reply.size());

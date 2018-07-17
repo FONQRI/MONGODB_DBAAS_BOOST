@@ -6,7 +6,7 @@
 #include <string>
 
 namespace dbaas {
-namespace core {
+namespace controller {
 
 /**
 * @brief update_key		: create json for update_key of user database
@@ -16,7 +16,7 @@ namespace core {
 */
 void update_key(http::server::reply &rep, http::server::request request);
 
-} // core
+} // controller
 } // dbaas
 
 #endif // CONTROLLER_UPDATE_KEY_H

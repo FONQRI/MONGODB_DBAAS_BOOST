@@ -5,14 +5,14 @@
 #include <string>
 
 namespace dbaas {
-namespace core {
+namespace controller {
 /**
 * @brief create_user	: create json for create_user of user database functions
 * @param rep			: reply of http
 * @param request		: request of http
 */
 void create_user(http::server::reply &rep, http::server::request request);
-} // core
+} // controller
 } // dbaas
 
 #endif // CONTROLLER_CREATE_USER_H
