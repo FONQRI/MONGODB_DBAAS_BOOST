@@ -7,7 +7,7 @@
 #include <string>
 
 namespace dbaas {
-namespace core {
+namespace controller {
 /**
 * @brief distinct	:  <a href =
 * "https://docs.mongodb.com/manual/reference/method/db.collection.distinct/">
@@ -16,7 +16,7 @@ namespace core {
 * @param request		: request of http
 */
 void distinct(http::server::reply &rep, http::server::request request);
-} // core
+} // controller
 } // dbaas
 
 #endif // DISTINCT_H

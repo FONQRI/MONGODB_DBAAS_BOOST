@@ -2,9 +2,9 @@
 #include "aggregate.h"
 
 // internal
+#include "src/core/reply.h"
 #include "src/database/collection_methods.h"
-#include "src/database/password.h"
-#include "src/database/reply.h"
+#include "src/database/security/password.h"
 
 // mongocxx
 #include <mongocxx/exception/exception.hpp>
@@ -16,8 +16,8 @@
 #include <iostream>
 #include <vector>
 
-void dbaas::core::aggregate(http::server::reply &rep,
-				http::server::request request)
+void dbaas::controller::aggregate(http::server::reply &rep,
+				  http::server::request request)
 {
 
 	// add headers
@@ -53,15 +53,13 @@ void dbaas::core::aggregate(http::server::reply &rep,
 			}
 			if (username.empty()) {
 				std::string reply =
-				dbaas::database::reply::missing_item_error(
-					"username");
+				core::reply::missing_item_error("username");
 				rep.content.append(reply.c_str(), reply.size());
 				return;
 			}
 			else if (client_key.empty()) {
 				std::string reply =
-				dbaas::database::reply::missing_item_error(
-					"client_key");
+				core::reply::missing_item_error("client_key");
 				rep.content.append(reply.c_str(), reply.size());
 				return;
 			}
@@ -69,8 +67,8 @@ void dbaas::core::aggregate(http::server::reply &rep,
 			// get database name and check client_key access
 			std::string database_name{};
 			std::string check_key_reply;
-			if (!dbaas::database::password::check_key(
-				client_key, check_key_reply)) {
+			if (!dbaas::database::security::password::check_key(
+				username, client_key, check_key_reply)) {
 				rep.content.append(check_key_reply.c_str(),
 						   check_key_reply.size());
 				return;
@@ -92,17 +90,12 @@ void dbaas::core::aggregate(http::server::reply &rep,
 			}
 			catch (std::exception &e) {
 
-				// if element doesn't exist in request document
-				if (strcmp(e.what(),
-					   "unset document::element") == 0) {
-					// element is optional
-				} // check if element type is wrong
-				else if (strcmp(e.what(),
-						"expected element "
-						"type k_document") == 0) {
+				// element is optional
+				// check if element type is wrong
+				if (strcmp(e.what(), "expected element "
+							 "type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
-						"options");
+					core::reply::wrong_item_type("options");
 					rep.content.append(reply.c_str(),
 							   reply.size());
 					return;
@@ -237,20 +230,13 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type(
+						core::reply::wrong_item_type(
 							"allow_disk_use");
 						rep.content.append(reply.c_str(),
 								   reply.size());
@@ -269,20 +255,13 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type(
+						core::reply::wrong_item_type(
 							"use_cursor");
 						rep.content.append(reply.c_str(),
 								   reply.size());
@@ -301,20 +280,13 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type(
+						core::reply::wrong_item_type(
 							"bypass_document_"
 							"validation");
 						rep.content.append(reply.c_str(),
@@ -335,8 +307,7 @@ void dbaas::core::aggregate(http::server::reply &rep,
 					}
 					else {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type(
+						core::reply::wrong_item_type(
 							"max_time is unsigned");
 						rep.content.append(reply.c_str(),
 								   reply.size());
@@ -344,20 +315,14 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type("max_time");
+						core::reply::wrong_item_type(
+							"max_time");
 						rep.content.append(reply.c_str(),
 								   reply.size());
 						return;
@@ -372,20 +337,13 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type(
+						core::reply::wrong_item_type(
 							"batch_size");
 						rep.content.append(reply.c_str(),
 								   reply.size());
@@ -401,20 +359,13 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type(
+						core::reply::wrong_item_type(
 							"collation");
 						rep.content.append(reply.c_str(),
 								   reply.size());
@@ -432,20 +383,13 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type(
+						core::reply::wrong_item_type(
 							"write_concern");
 						rep.content.append(reply.c_str(),
 								   reply.size());
@@ -465,23 +409,15 @@ void dbaas::core::aggregate(http::server::reply &rep,
 					}
 					catch (std::exception &e) {
 
-						// if element doesn't exist in
-						// request document
+						// element is optional
+						// check if element type is
+						// wrong
 						if (strcmp(e.what(),
-							   "unset "
-							   "document::"
-							   "element") == 0) {
-							// element is optional
-						} // check if element type is
-						  // wrong
-						else if (
-							strcmp(e.what(),
 							   "expected element "
 							   "type k_document") ==
 							0) {
-							std::string reply =
-							dbaas::database::reply::
-								wrong_item_type(
+							std::string reply = core::
+							reply::wrong_item_type(
 								"acknowledge_"
 								"level");
 							rep.content.append(
@@ -500,23 +436,15 @@ void dbaas::core::aggregate(http::server::reply &rep,
 					}
 					catch (std::exception &e) {
 
-						// if element doesn't exist in
-						// request document
+						// element is optional
+						// check if element type is
+						// wrong
 						if (strcmp(e.what(),
-							   "unset "
-							   "document::"
-							   "element") == 0) {
-							// element is optional
-						} // check if element type is
-						  // wrong
-						else if (
-							strcmp(e.what(),
 							   "expected element "
 							   "type k_document") ==
 							0) {
-							std::string reply =
-							dbaas::database::reply::
-								wrong_item_type(
+							std::string reply = core::
+							reply::wrong_item_type(
 								"tag");
 							rep.content.append(
 							reply.c_str(),
@@ -534,23 +462,15 @@ void dbaas::core::aggregate(http::server::reply &rep,
 					}
 					catch (std::exception &e) {
 
-						// if element doesn't exist in
-						// request document
+						// element is optional
+						// check if element type is
+						// wrong
 						if (strcmp(e.what(),
-							   "unset "
-							   "document::"
-							   "element") == 0) {
-							// element is optional
-						} // check if element type is
-						  // wrong
-						else if (
-							strcmp(e.what(),
 							   "expected element "
 							   "type k_document") ==
 							0) {
-							std::string reply =
-							dbaas::database::reply::
-								wrong_item_type(
+							std::string reply = core::
+							reply::wrong_item_type(
 								"journal");
 							rep.content.append(
 							reply.c_str(),
@@ -568,23 +488,15 @@ void dbaas::core::aggregate(http::server::reply &rep,
 					}
 					catch (std::exception &e) {
 
-						// if element doesn't exist in
-						// request document
+						// element is optional
+						// check if element type is
+						// wrong
 						if (strcmp(e.what(),
-							   "unset "
-							   "document::"
-							   "element") == 0) {
-							// element is optional
-						} // check if element type is
-						  // wrong
-						else if (
-							strcmp(e.what(),
 							   "expected element "
 							   "type k_document") ==
 							0) {
-							std::string reply =
-							dbaas::database::reply::
-								wrong_item_type(
+							std::string reply = core::
+							reply::wrong_item_type(
 								"majority");
 							rep.content.append(
 							reply.c_str(),
@@ -602,23 +514,15 @@ void dbaas::core::aggregate(http::server::reply &rep,
 					}
 					catch (std::exception &e) {
 
-						// if element doesn't exist in
-						// request document
+						// element is optional
+						// check if element type is
+						// wrong
 						if (strcmp(e.what(),
-							   "unset "
-							   "document::"
-							   "element") == 0) {
-							// element is optional
-						} // check if element type is
-						  // wrong
-						else if (
-							strcmp(e.what(),
 							   "expected element "
 							   "type k_document") ==
 							0) {
-							std::string reply =
-							dbaas::database::reply::
-								wrong_item_type(
+							std::string reply = core::
+							reply::wrong_item_type(
 								"timeout");
 							rep.content.append(
 							reply.c_str(),
@@ -636,23 +540,15 @@ void dbaas::core::aggregate(http::server::reply &rep,
 					}
 					catch (std::exception &e) {
 
-						// if element doesn't exist in
-						// request document
+						// element is optional
+						// check if element type is
+						// wrong
 						if (strcmp(e.what(),
-							   "unset "
-							   "document::"
-							   "element") == 0) {
-							// element is optional
-						} // check if element type is
-						  // wrong
-						else if (
-							strcmp(e.what(),
 							   "expected element "
 							   "type k_document") ==
 							0) {
-							std::string reply =
-							dbaas::database::reply::
-								wrong_item_type(
+							std::string reply = core::
+							reply::wrong_item_type(
 								"nodes");
 							rep.content.append(
 							reply.c_str(),
@@ -670,20 +566,14 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type("hint");
+						core::reply::wrong_item_type(
+							"hint");
 						rep.content.append(reply.c_str(),
 								   reply.size());
 						return;
@@ -700,20 +590,14 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type("hint_str");
+						core::reply::wrong_item_type(
+							"hint_str");
 						rep.content.append(reply.c_str(),
 								   reply.size());
 						return;
@@ -730,16 +614,12 @@ void dbaas::core::aggregate(http::server::reply &rep,
 			}
 			catch (std::exception &e) {
 
-				// if element doesn't exist in request document
-				if (strcmp(e.what(),
-					   "unset document::element") == 0) {
-					// element is optional
-				} // check if element type is wrong
-				else if (strcmp(e.what(),
-						"expected element "
-						"type k_document") == 0) {
+				// element is optional
+				// check if element type is wrong
+				if (strcmp(e.what(), "expected element "
+							 "type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
+					core::reply::wrong_item_type(
 						"pipeline");
 					rep.content.append(reply.c_str(),
 							   reply.size());
@@ -757,21 +637,14 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in
-					// request document
-					if (strcmp(e.what(), "unset "
-								 "document::"
-								 "element") == 0) {
-						// element is optional
-					} // check if element type is
-					  // wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+					// element is optional
+					// check if element type is wrong
+					if (strcmp(e.what(),
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type("limit");
+						core::reply::wrong_item_type(
+							"limit");
 						rep.content.append(reply.c_str(),
 								   reply.size());
 						return;
@@ -786,21 +659,14 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in
-					// request document
-					if (strcmp(e.what(), "unset "
-								 "document::"
-								 "element") == 0) {
-						// element is optional
-					} // check if element type is
-					  // wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+					// element is optional
+					// check if element type is wrong
+					if (strcmp(e.what(),
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type("sample");
+						core::reply::wrong_item_type(
+							"sample");
 						rep.content.append(reply.c_str(),
 								   reply.size());
 						return;
@@ -815,21 +681,14 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in
-					// request document
-					if (strcmp(e.what(), "unset "
-								 "document::"
-								 "element") == 0) {
-						// element is optional
-					} // check if element type is
-					  // wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+					// element is optional
+					// check if element type is wrong
+					if (strcmp(e.what(),
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type("skip");
+						core::reply::wrong_item_type(
+							"skip");
 						rep.content.append(reply.c_str(),
 								   reply.size());
 						return;
@@ -845,20 +704,14 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type("out");
+						core::reply::wrong_item_type(
+							"out");
 						rep.content.append(reply.c_str(),
 								   reply.size());
 						return;
@@ -874,20 +727,14 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type("count");
+						core::reply::wrong_item_type(
+							"count");
 						rep.content.append(reply.c_str(),
 								   reply.size());
 						return;
@@ -902,20 +749,13 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type(
+						core::reply::wrong_item_type(
 							"add_fields");
 						rep.content.append(reply.c_str(),
 								   reply.size());
@@ -931,20 +771,14 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type("bucket");
+						core::reply::wrong_item_type(
+							"bucket");
 						rep.content.append(reply.c_str(),
 								   reply.size());
 						return;
@@ -959,20 +793,13 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type(
+						core::reply::wrong_item_type(
 							"bucket_auto");
 						rep.content.append(reply.c_str(),
 								   reply.size());
@@ -988,20 +815,13 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type(
+						core::reply::wrong_item_type(
 							"coll_stats");
 						rep.content.append(reply.c_str(),
 								   reply.size());
@@ -1017,20 +837,14 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type("facet");
+						core::reply::wrong_item_type(
+							"facet");
 						rep.content.append(reply.c_str(),
 								   reply.size());
 						return;
@@ -1045,20 +859,14 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type("geo_near");
+						core::reply::wrong_item_type(
+							"geo_near");
 						rep.content.append(reply.c_str(),
 								   reply.size());
 						return;
@@ -1073,20 +881,13 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type(
+						core::reply::wrong_item_type(
 							"graph_lookup");
 						rep.content.append(reply.c_str(),
 								   reply.size());
@@ -1102,20 +903,14 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type("group");
+						core::reply::wrong_item_type(
+							"group");
 						rep.content.append(reply.c_str(),
 								   reply.size());
 						return;
@@ -1130,20 +925,13 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type(
+						core::reply::wrong_item_type(
 							"index_stats");
 						rep.content.append(reply.c_str(),
 								   reply.size());
@@ -1159,20 +947,14 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type("lookup");
+						core::reply::wrong_item_type(
+							"lookup");
 						rep.content.append(reply.c_str(),
 								   reply.size());
 						return;
@@ -1187,20 +969,14 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type("match");
+						core::reply::wrong_item_type(
+							"match");
 						rep.content.append(reply.c_str(),
 								   reply.size());
 						return;
@@ -1215,20 +991,14 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type("project");
+						core::reply::wrong_item_type(
+							"project");
 						rep.content.append(reply.c_str(),
 								   reply.size());
 						return;
@@ -1243,20 +1013,14 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type("redact");
+						core::reply::wrong_item_type(
+							"redact");
 						rep.content.append(reply.c_str(),
 								   reply.size());
 						return;
@@ -1271,20 +1035,13 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type(
+						core::reply::wrong_item_type(
 							"replace_root");
 						rep.content.append(reply.c_str(),
 								   reply.size());
@@ -1300,20 +1057,14 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type("sort");
+						core::reply::wrong_item_type(
+							"sort");
 						rep.content.append(reply.c_str(),
 								   reply.size());
 						return;
@@ -1328,20 +1079,13 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type(
+						core::reply::wrong_item_type(
 							"sort_by_count");
 						rep.content.append(reply.c_str(),
 								   reply.size());
@@ -1359,20 +1103,13 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type(
+						core::reply::wrong_item_type(
 							"sort_by_count_str");
 						rep.content.append(reply.c_str(),
 								   reply.size());
@@ -1388,20 +1125,14 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type("unwind");
+						core::reply::wrong_item_type(
+							"unwind");
 						rep.content.append(reply.c_str(),
 								   reply.size());
 						return;
@@ -1417,20 +1148,13 @@ void dbaas::core::aggregate(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
-						dbaas::database::reply::
-							wrong_item_type(
+						core::reply::wrong_item_type(
 							"unwind_str");
 						rep.content.append(reply.c_str(),
 								   reply.size());
@@ -1456,7 +1180,7 @@ void dbaas::core::aggregate(http::server::reply &rep,
 		else {
 			// if request isn't post method
 			std::string reply =
-			dbaas::database::reply::http_error("send post method");
+			core::reply::http_error("send post method");
 
 			// write reply
 			rep.content.append(reply.c_str(), reply.size());
@@ -1466,7 +1190,7 @@ void dbaas::core::aggregate(http::server::reply &rep,
 
 		// if execption happend in getting values or parsing json
 		std::string reply =
-		dbaas::database::reply::wrong_request_content_type(e.what());
+		core::reply::wrong_request_content_type(e.what());
 
 		// write reply
 		rep.content.append(reply.c_str(), reply.size());

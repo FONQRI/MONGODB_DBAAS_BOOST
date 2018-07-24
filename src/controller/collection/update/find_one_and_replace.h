@@ -6,7 +6,7 @@
 
 #include <string>
 namespace dbaas {
-namespace core {
+namespace controller {
 /**
 * @brief find_one_and_replace	: gets request content json and prepare it for
 * find_one_and_replace function in database namespace
@@ -15,7 +15,7 @@ namespace core {
 */
 void find_one_and_replace(http::server::reply &rep,
 			  http::server::request request);
-} // core
+} // controller
 } // dbaas
 
 #endif // CONTROLLER_FIND_ONE_AND_REPLACE_H

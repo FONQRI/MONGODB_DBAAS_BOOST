@@ -5,13 +5,13 @@
 * @version 0.9 12/5/2018
 */
 
-#ifndef REPLY_H
-#define REPLY_H
+#ifndef core_REPLY_H
+#define core_REPLY_H
 
 #include <string>
 
 namespace dbaas {
-namespace database {
+namespace core {
 namespace reply {
 
 /**
@@ -65,6 +65,8 @@ std::string access_denied(std::string why);
  * @return						: json error
  */
 std::string client_key_not_found(std::string client_key);
+std::string key_does_not_have_access_to_function(std::string function_name);
+std::string key_does_not_have_access_to_request();
 
 /**
  * @brief user_creation_failed
@@ -74,6 +76,8 @@ std::string client_key_not_found(std::string client_key);
 std::string user_creation_failed(std::string why);
 
 std::string user_update_failed(std::string why);
+
+std::string user_does_not_exist(std::string which);
 
 /**
  * @brief http_error
@@ -99,6 +103,6 @@ std::string database_error(std::string what);
 std::string duplicate_index(std::string what);
 
 } // reply
+} // core
 } // dbaas
-} // database
-#endif // REPLY_H
+#endif // core_REPLY_H

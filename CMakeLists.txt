@@ -13,6 +13,14 @@ file(GLOB ServerHeaders ./src/server/*.h)
 file(GLOB ServerCpp ./src/server/*.cpp)
 file(GLOB ServerHpp ./src/server/*.hpp)
 
+file(GLOB coreHeaders ./src/core/*.h)
+file(GLOB coreCpp ./src/core/*.cpp)
+file(GLOB coreHpp ./src/core/*.hpp)
+
+file(GLOB SecurityHeaders ./src/database/security/*.h)
+file(GLOB SecurityCpp ./src/database/security/*.cpp)
+file(GLOB SecurityHpp ./src/database/security/*.hpp)
+
 file(GLOB RequestHeaders ./src/controller/*.h)
 file(GLOB RequestCpp ./src/controller/*.cpp)
 file(GLOB RequestHpp ./src/controller/*.hpp)
@@ -59,6 +67,19 @@ add_library(Server
   ${ServerHpp}
   )
 
+add_library(Security
+  ${SecurityHeaders}
+  ${SecurityCpp}
+  ${SecurityHpp}
+  )
+
+add_library(core
+  ${coreHeaders}
+  ${coreCpp}
+  ${coreHpp}
+  )
+
+
 add_library(Request
 
   ${RequestHeaders}
@@ -89,12 +110,16 @@ add_library(Request
 
   ${UserControllersHeaders}
   ${UserControllersCpp}
+  )
 
+target_link_libraries(Request
+  Database
+  Security
+  core
+  )
 
-  ${DatabaseHeaders}
-  ${DatabaseCpp}
-  ${DatabaseHpp}
-
+target_link_libraries(Security
+  Database
   )
 
 add_library(Database
@@ -137,6 +162,7 @@ if(Boost_FOUND)
     Server
     Request
     Database
+    Security
     )
 
   target_link_libraries(Database

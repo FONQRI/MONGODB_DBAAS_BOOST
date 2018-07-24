@@ -6,7 +6,7 @@
 #include <string>
 
 namespace dbaas {
-namespace core {
+namespace controller {
 
 /**
 * @brief create_key	: create json for create_key of user database functions
@@ -15,6 +15,6 @@ namespace core {
 */
 void create_key(http::server::reply &rep, http::server::request request);
 
-} // core
+} // controller
 } // dbaas
 #endif // CONTROLLER_CREATE_KEY_H

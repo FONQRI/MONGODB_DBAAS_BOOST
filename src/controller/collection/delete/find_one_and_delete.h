@@ -7,7 +7,7 @@
 #include <string>
 
 namespace dbaas {
-namespace core {
+namespace controller {
 /**
 * @brief find_one_and_delete	: gets request content json and prepare it for
 * find_one_and_delete function in database namespace

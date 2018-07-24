@@ -6,7 +6,7 @@
 #include <string>
 
 namespace dbaas {
-namespace core {
+namespace controller {
 
 /**
 * @brief create_payment	: create json for create_payment of user database
@@ -16,6 +16,6 @@ namespace core {
 */
 void create_payment(http::server::reply &rep, http::server::request request);
 
-} // core
+} // controller
 } // dbaas
 #endif // CONTROLLER_CREATE_PAYMENT_H

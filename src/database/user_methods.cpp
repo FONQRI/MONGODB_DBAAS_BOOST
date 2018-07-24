@@ -8,7 +8,7 @@
 #include <sstream>
 #include <vector>
 
-#include "reply.h"
+#include "core/reply.h"
 
 // mongocxx
 #include <bsoncxx/builder/basic/array.hpp>
@@ -87,11 +87,11 @@ std::string dbaas::database::create_user(std::string username,
 
 		collection.insert_one(user_document.view());
 		// return seccess message
-		return reply::answer_done();
+		return core::reply::answer_done();
 	}
 	catch (const mongocxx::exception &e) {
 		// create json from error
-		return reply::user_creation_failed(e.what());
+		return core::reply::user_creation_failed(e.what());
 	}
 
 	return reply;
@@ -179,11 +179,11 @@ std::string dbaas::database::update_user(
 
 		collection.update_one(filter_document.view(), user_document.view());
 		// return seccess message
-		return reply::answer_done();
+		return core::reply::answer_done();
 	}
 	catch (const mongocxx::exception &e) {
 		// create json from error
-		return reply::user_creation_failed(e.what());
+		return core::reply::user_creation_failed(e.what());
 	}
 
 	return reply;
@@ -213,11 +213,11 @@ std::string dbaas::database::get_user(std::string username,
 
 		auto cursor = collection.find_one(filter_document.view());
 		// return seccess message
-		return reply::answer(bsoncxx::to_json(cursor.value()));
+		return core::reply::answer(bsoncxx::to_json(cursor.value()));
 	}
 	catch (const mongocxx::exception &e) {
 		// create json from error
-		return reply::wrong_request_content_type(e.what());
+		return core::reply::wrong_request_content_type(e.what());
 	}
 
 	return reply;
@@ -247,22 +247,20 @@ std::string dbaas::database::delete_user(std::string username,
 
 		collection.delete_one(filter_document.view());
 		// return seccess message
-		return reply::answer_done();
+		return core::reply::answer_done();
 	}
 	catch (const mongocxx::exception &e) {
 		// create json from error
-		return reply::wrong_request_content_type(e.what());
+		return core::reply::wrong_request_content_type(e.what());
 	}
 
 	return reply;
 }
 
-std::string dbaas::database::create_key(std::string username,
-					std::string password, std::string name,
-					int valid_request_per_day,
-					int valid_read_size,
-					int valid_write_size,
-					std::vector<std::string> access)
+std::string dbaas::database::create_key(
+	std::string username, std::string password, std::string name,
+	std::string database_name, int valid_requests_number, int valid_read_size,
+	int valid_write_size, std::vector<std::string> access)
 {
 	// reply message
 	std::string reply;
@@ -289,8 +287,7 @@ std::string dbaas::database::create_key(std::string username,
 
 		// check if key name exist
 		bsoncxx::to_json(cursor.value());
-		return dbaas::database::reply::duplicate_index(
-		"duplicate key.name");
+		return core::reply::duplicate_index("duplicate key.name");
 	}
 	catch (const std::exception &e) {
 		// key name is unique
@@ -302,8 +299,10 @@ std::string dbaas::database::create_key(std::string username,
 
 		// create new user
 		key_document.append(kvp("name", name));
+		key_document.append(kvp("database_name", database_name));
+		key_document.append(kvp("request_per_day", 0));
 		key_document.append(
-		kvp("valid_request_per_day", valid_request_per_day));
+		kvp("valid_requests_number", valid_requests_number));
 		key_document.append(kvp("valid_read_size", valid_read_size));
 		key_document.append(kvp("valid_write_size", valid_write_size));
 
@@ -337,19 +336,20 @@ std::string dbaas::database::create_key(std::string username,
 		collection.update_one({filter_document}, {update_document});
 
 		// return seccess message
-		return reply::answer_done();
+		return core::reply::answer_done();
 	}
 	catch (const mongocxx::exception &e) {
 		// create json from error
-		return reply::user_creation_failed(e.what());
+		return core::reply::user_creation_failed(e.what());
 	}
 }
 
 std::string dbaas::database::update_key(
 	std::string username, std::string password, std::string name,
-	optional_string update_name, optional_int valid_request_per_day,
-	optional_int request_per_day, optional_int valid_read_size,
-	optional_int valid_write_size, optional_string_array access)
+	optional_string update_name, optional_string database_name,
+	optional_int valid_requests_number, optional_int request_per_day,
+	optional_int valid_read_size, optional_int valid_write_size,
+	optional_string_array access)
 {
 	// reply message
 	std::string reply;
@@ -374,42 +374,6 @@ std::string dbaas::database::update_key(
 
 		bsoncxx::builder::basic::document key_document{};
 
-		// create new user
-		if (update_name.is_initialized()) {
-			key_document.append(kvp("name", update_name.get()));
-		}
-
-		if (valid_request_per_day.is_initialized()) {
-			key_document.append(kvp("valid_request_per_day",
-						valid_request_per_day.get()));
-		}
-
-		if (request_per_day.is_initialized()) {
-			key_document.append(
-			kvp("request_per_day", request_per_day.get()));
-		}
-
-		if (valid_read_size.is_initialized()) {
-			key_document.append(
-			kvp("valid_read_size", valid_read_size.get()));
-		}
-
-		if (valid_write_size.is_initialized()) {
-			key_document.append(
-			kvp("valid_write_size", valid_write_size.get()));
-		}
-
-		if (access.is_initialized()) {
-			key_document.append(
-			kvp("access_level", [access](sub_array child) {
-				for (size_t i = 0; i < access.get().size(); i++) {
-				bsoncxx::stdx::string_view d =
-					access.get().at(i);
-				child.append(d);
-				}
-			}));
-		}
-
 		// get now time and date
 		auto t = std::time(nullptr);
 		auto tm = *std::localtime(&t);
@@ -421,18 +385,80 @@ std::string dbaas::database::update_key(
 
 		bsoncxx::builder::basic::document update_document{};
 
-		update_document.append(
-		kvp("$set", make_document(kvp("keys", key_document))));
+		//		update_document.append(
+		//		kvp("$set", make_document(kvp("keys.$",
+		// key_document))));
+
+		// update user
+		if (update_name.is_initialized()) {
+			update_document.append(kvp(
+			"$set",
+			make_document(kvp("keys.$.name", update_name.get()))));
+		}
+
+		if (database_name.is_initialized()) {
+			update_document.append(
+			kvp("$set", make_document(kvp("keys.$.database_name",
+							  database_name.get()))));
+		}
+
+		if (valid_requests_number.is_initialized()) {
+			update_document.append(
+			kvp("$set",
+				make_document(kvp("keys.$.valid_requests_number",
+						  valid_requests_number.get()))));
+		}
+
+		if (request_per_day.is_initialized()) {
+			update_document.append(
+			kvp("$set", make_document(kvp("keys.$.request_per_day",
+							  request_per_day.get()))));
+		}
+
+		if (valid_read_size.is_initialized()) {
+			update_document.append(
+			kvp("$set", make_document(kvp("keys.$.valid_read_size",
+							  valid_read_size.get()))));
+		}
+
+		if (valid_write_size.is_initialized()) {
+			update_document.append(kvp(
+			"$set", make_document(kvp("keys.$.valid_write_size",
+						  valid_write_size.get()))));
+		}
+
+		// TODO P[0] update
+		if (access.is_initialized()) {
+
+			update_document.append(kvp(
+			"$set",
+			make_document(kvp(
+				"keys.$.access_level", [access](sub_array child) {
+				for (size_t i = 0; i < access.get().size();
+					 i++) {
+					bsoncxx::stdx::string_view d =
+					access.get().at(i);
+					child.append(d);
+				}
+				}))));
+
+			//			key_document.append(
+			//			kvp("access_level", ));
+		}
+
+		//		update_document.append(kvp(
+		//		"$set", make_document(kvp("keys.$.name",
+		// update_name.get()))));
 
 		// create cursor bu qyery and options
 		collection.update_one({find_document}, {update_document});
 
 		// return seccess message
-		return reply::answer_done();
+		return core::reply::answer_done();
 	}
 	catch (const mongocxx::exception &e) {
 		// create json from error
-		return reply::user_creation_failed(e.what());
+		return core::reply::user_creation_failed(e.what());
 	}
 
 	return reply;
@@ -480,15 +506,15 @@ std::string dbaas::database::get_user_key(std::string username,
 		}
 		catch (std::exception &e) {
 
-			return reply::answer_not_found(e.what());
+			return core::reply::answer_not_found(e.what());
 		}
 
 		// return seccess message
-		return reply::answer(query_array);
+		return core::reply::answer(query_array);
 	}
 	catch (const mongocxx::exception &e) {
 		// create json from error
-		return reply::wrong_request_content_type(e.what());
+		return core::reply::wrong_request_content_type(e.what());
 	}
 
 	return reply;
@@ -540,15 +566,15 @@ std::string dbaas::database::get_user_keys(std::string username,
 		}
 		catch (std::exception &e) {
 
-			return reply::answer_not_found(e.what());
+			return core::reply::answer_not_found(e.what());
 		}
 
 		// return seccess message
-		return reply::answer(bsoncxx::to_json(array));
+		return core::reply::answer(bsoncxx::to_json(array));
 	}
 	catch (const mongocxx::exception &e) {
 		// create json from error
-		return reply::wrong_request_content_type(e.what());
+		return core::reply::wrong_request_content_type(e.what());
 	}
 
 	return reply;
@@ -588,11 +614,11 @@ std::string dbaas::database::delete_user_key(std::string username,
 		collection.update_one({filter_document}, {update_document});
 
 		// return seccess message
-		return reply::answer_done();
+		return core::reply::answer_done();
 	}
 	catch (const mongocxx::exception &e) {
 		// create json from error
-		return reply::user_creation_failed(e.what());
+		return core::reply::user_creation_failed(e.what());
 	}
 
 	return reply;
@@ -629,11 +655,11 @@ std::string dbaas::database::delete_user_keys(std::string username,
 		collection.update_one({filter_document}, {update_document});
 
 		// return seccess message
-		return reply::answer_done();
+		return core::reply::answer_done();
 	}
 	catch (const mongocxx::exception &e) {
 		// create json from error
-		return reply::user_creation_failed(e.what());
+		return core::reply::user_creation_failed(e.what());
 	}
 
 	return reply;
@@ -705,11 +731,11 @@ std::string dbaas::database::create_payment(
 		collection.update_one({filter_document}, {update_document});
 
 		// return seccess message
-		return reply::answer_done();
+		return core::reply::answer_done();
 	}
 	catch (const mongocxx::exception &e) {
 		// create json from error
-		return reply::user_creation_failed(e.what());
+		return core::reply::user_creation_failed(e.what());
 	}
 }
 
@@ -741,14 +767,14 @@ std::string dbaas::database::get_payments(std::string username,
 		}
 		catch (std::exception &e) {
 
-			return reply::answer_not_found(e.what());
+			return core::reply::answer_not_found(e.what());
 		}
 
 		// return seccess message
-		return reply::answer(bsoncxx::to_json(array));
+		return core::reply::answer(bsoncxx::to_json(array));
 	}
 	catch (const mongocxx::exception &e) {
 		// create json from error
-		return reply::wrong_request_content_type(e.what());
+		return core::reply::wrong_request_content_type(e.what());
 	}
 }

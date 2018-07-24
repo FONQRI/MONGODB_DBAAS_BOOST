@@ -6,7 +6,7 @@
 #include <string>
 
 namespace dbaas {
-namespace core {
+namespace controller {
 /**
 * @brief delete_user_keys	: create json for delete_user_keys of user
 * database functions
@@ -15,6 +15,6 @@ namespace core {
 */
 void delete_user_keys(http::server::reply &rep, http::server::request request);
 
-} // core
+} // controller
 } // dbaas
 #endif // CONTROLLER_DELETE_USER_KEYS_H

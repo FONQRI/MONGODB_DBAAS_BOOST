@@ -6,7 +6,7 @@
 #include <string>
 
 namespace dbaas {
-namespace core {
+namespace controller {
 
 /**
 * @brief get_user	: create json for get_user of user database functions
@@ -15,6 +15,6 @@ namespace core {
 */
 void get_user(http::server::reply &rep, http::server::request request);
 
-} // core
+} // controller
 } // dbaas
 #endif // CONTROLLER_GET_USER_H

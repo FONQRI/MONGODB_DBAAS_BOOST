@@ -6,7 +6,7 @@
 
 #include <string>
 namespace dbaas {
-namespace core {
+namespace controller {
 /**
 * @brief insert_many	: gets request content json and prepare it for
 * insert_many function in database namespace
@@ -14,7 +14,7 @@ namespace core {
 * @param request		: request of http
 */
 void insert_many(http::server::reply &rep, http::server::request request);
-} // core
+} // controller
 } // dbaas
 
 #endif // CONTROLLER_INSERT_MANY_H

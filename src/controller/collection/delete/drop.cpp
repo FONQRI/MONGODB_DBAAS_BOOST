@@ -2,9 +2,9 @@
 #include "drop.h"
 
 // internal
+#include "src/core/reply.h"
 #include "src/database/collection_methods.h"
-#include "src/database/password.h"
-#include "src/database/reply.h"
+#include "src/database/security/password.h"
 
 // boost
 #include <boost/optional.hpp>
@@ -17,7 +17,8 @@
 #include <string>
 #include <vector>
 
-void drop(http::server::reply &rep, http::server::request request)
+void dbaas::controller::drop(http::server::reply &rep,
+				 http::server::request request)
 {
 	// add headers
 	//	specifying content type as json
@@ -52,15 +53,13 @@ void drop(http::server::reply &rep, http::server::request request)
 			}
 			if (username.empty()) {
 				std::string reply =
-				dbaas::database::reply::missing_item_error(
-					"username");
+				core::reply::missing_item_error("username");
 				rep.content.append(reply.c_str(), reply.size());
 				return;
 			}
 			else if (client_key.empty()) {
 				std::string reply =
-				dbaas::database::reply::missing_item_error(
-					"client_key");
+				core::reply::missing_item_error("client_key");
 				rep.content.append(reply.c_str(), reply.size());
 				return;
 			}
@@ -68,8 +67,8 @@ void drop(http::server::reply &rep, http::server::request request)
 			// get database name and check client_key access
 			std::string database_name{};
 			std::string check_key_reply;
-			if (!dbaas::database::password::check_key(
-				client_key, check_key_reply)) {
+			if (!dbaas::database::security::password::check_key(
+				username, client_key, check_key_reply)) {
 				rep.content.append(check_key_reply.c_str(),
 						   check_key_reply.size());
 				return;
@@ -88,7 +87,7 @@ void drop(http::server::reply &rep, http::server::request request)
 
 			// if request isn't post method
 			std::string reply =
-			dbaas::database::reply::http_error("send post method");
+			core::reply::http_error("send post method");
 
 			// write reply
 			rep.content.append(reply.c_str(), reply.size());
@@ -98,7 +97,7 @@ void drop(http::server::reply &rep, http::server::request request)
 
 		// if execption happend in getting values or parsing json
 		std::string reply =
-		dbaas::database::reply::wrong_request_content_type(e.what());
+		core::reply::wrong_request_content_type(e.what());
 
 		// write reply
 		rep.content.append(reply.c_str(), reply.size());

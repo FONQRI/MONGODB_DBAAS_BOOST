@@ -7,7 +7,7 @@
 #include <string>
 
 namespace dbaas {
-namespace core {
+namespace controller {
 /**
 * @brief delete_many	: gets request content json and prepare it for
 * delete_many function in database namespace
@@ -16,7 +16,7 @@ namespace core {
 */
 void delete_many(http::server::reply &rep, http::server::request request);
 
-} // core
+} // controller
 } // dbaas
 
 #endif // CONTROLLER_DELETE_MANY_H

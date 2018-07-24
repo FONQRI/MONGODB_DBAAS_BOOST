@@ -2,9 +2,9 @@
 #include "delete_user_key.h"
 
 // internal
-#include "src/database/password.h"
-#include "src/database/reply.h"
+#include "src/core/reply.h"
 #include "src/database/user_methods.h"
+#include "src/database/security/password.h"
 
 // boost
 #include <boost/optional.hpp>
@@ -20,8 +20,8 @@
 #include <sstream>
 #include <vector>
 
-void dbaas::core::delete_user_key(http::server::reply &rep,
-				  http::server::request request)
+void dbaas::controller::delete_user_key(http::server::reply &rep,
+					http::server::request request)
 {
 	// add headers
 	//	specifying content type as json
@@ -56,15 +56,13 @@ void dbaas::core::delete_user_key(http::server::reply &rep,
 			}
 			if (username.empty()) {
 				std::string reply =
-				dbaas::database::reply::missing_item_error(
-					"username");
+				core::reply::missing_item_error("username");
 				rep.content.append(reply.c_str(), reply.size());
 				return;
 			}
 			else if (password.empty()) {
 				std::string reply =
-				dbaas::database::reply::missing_item_error(
-					"password");
+				core::reply::missing_item_error("password");
 				rep.content.append(reply.c_str(), reply.size());
 				return;
 			}
@@ -85,8 +83,8 @@ void dbaas::core::delete_user_key(http::server::reply &rep,
 				// if element doesn't exist in request document
 				if (strcmp(e.what(),
 					   "unset document::element") == 0) {
-					std::string reply = dbaas::database::reply::
-					missing_item_error("name");
+					std::string reply =
+					core::reply::missing_item_error("name");
 					rep.content.append(reply.c_str(),
 							   reply.size());
 				} // check if element type is wrong
@@ -94,8 +92,7 @@ void dbaas::core::delete_user_key(http::server::reply &rep,
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
-						"name");
+					core::reply::wrong_item_type("name");
 					rep.content.append(reply.c_str(),
 							   reply.size());
 				}
@@ -112,7 +109,7 @@ void dbaas::core::delete_user_key(http::server::reply &rep,
 		else {
 			// if request isn't post method
 			std::string reply =
-			dbaas::database::reply::http_error("send post method");
+			core::reply::http_error("send post method");
 
 			// write reply
 			rep.content.append(reply.c_str(), reply.size());
@@ -122,7 +119,7 @@ void dbaas::core::delete_user_key(http::server::reply &rep,
 
 		// if execption happend in getting values or parsing json
 		std::string reply =
-		dbaas::database::reply::wrong_request_content_type(e.what());
+		core::reply::wrong_request_content_type(e.what());
 
 		// write reply
 		rep.content.append(reply.c_str(), reply.size());

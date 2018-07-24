@@ -6,7 +6,7 @@
 #include <string>
 
 namespace dbaas {
-namespace core {
+namespace controller {
 /**
 * @brief delete_user	: create json for delete_user of user database functions
 * @param rep			: reply of http
@@ -14,6 +14,6 @@ namespace core {
 */
 void delete_user(http::server::reply &rep, http::server::request request);
 
-} // core
+} // controller
 } // dbaas
 #endif // CONTROLLER_DELETE_USER_H

@@ -12,7 +12,7 @@
 #include <string>
 
 namespace dbaas {
-namespace core {
+namespace controller {
 /**
 * @brief delete_one	: gets request content json and prepare it for
 * delete_one function in database namespace
@@ -20,7 +20,7 @@ namespace core {
 * @param request		: request of http
 */
 void delete_one(http::server::reply &rep, http::server::request request);
-} // core
+} // controller
 } // dbaas
 
 #endif // CONTROLLER_DELETE_ONE_H

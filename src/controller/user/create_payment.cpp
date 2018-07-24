@@ -2,9 +2,9 @@
 #include "create_payment.h"
 
 // internal
-#include "src/database/password.h"
-#include "src/database/reply.h"
+#include "src/core/reply.h"
 #include "src/database/user_methods.h"
+#include "src/database/security/password.h"
 
 // boost
 #include <boost/optional.hpp>
@@ -20,8 +20,8 @@
 #include <sstream>
 #include <vector>
 
-void dbaas::core::create_payment(http::server::reply &rep,
-				 http::server::request request)
+void dbaas::controller::create_payment(http::server::reply &rep,
+					   http::server::request request)
 {
 
 	// add headers
@@ -57,15 +57,13 @@ void dbaas::core::create_payment(http::server::reply &rep,
 			}
 			if (username.empty()) {
 				std::string reply =
-				dbaas::database::reply::missing_item_error(
-					"username");
+				core::reply::missing_item_error("username");
 				rep.content.append(reply.c_str(), reply.size());
 				return;
 			}
 			else if (password.empty()) {
 				std::string reply =
-				dbaas::database::reply::missing_item_error(
-					"password");
+				core::reply::missing_item_error("password");
 				rep.content.append(reply.c_str(), reply.size());
 				return;
 			}
@@ -85,8 +83,9 @@ void dbaas::core::create_payment(http::server::reply &rep,
 				// if element doesn't exist in request document
 				if (strcmp(e.what(),
 					   "unset document::element") == 0) {
-					std::string reply = dbaas::database::reply::
-					missing_item_error("main_value");
+					std::string reply =
+					core::reply::missing_item_error(
+						"main_value");
 					rep.content.append(reply.c_str(),
 							   reply.size());
 				} // check if element type is wrong
@@ -94,7 +93,7 @@ void dbaas::core::create_payment(http::server::reply &rep,
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
+					core::reply::wrong_item_type(
 						"main_value");
 					rep.content.append(reply.c_str(),
 							   reply.size());
@@ -111,16 +110,12 @@ void dbaas::core::create_payment(http::server::reply &rep,
 			}
 			catch (std::exception &e) {
 
-				// if element doesn't exist in request document
-				if (strcmp(e.what(),
-					   "unset document::element") == 0) {
-					// optional
-				} // check if element type is wrong
-				else if (strcmp(e.what(),
-						"expected element "
-						"type k_document") == 0) {
+				// optional
+				// check if element type is wrong
+				if (strcmp(e.what(), "expected element "
+							 "type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
+					core::reply::wrong_item_type(
 						"discount_value");
 					rep.content.append(reply.c_str(),
 							   reply.size());
@@ -138,16 +133,12 @@ void dbaas::core::create_payment(http::server::reply &rep,
 			}
 			catch (std::exception &e) {
 
-				// if element doesn't exist in request document
-				if (strcmp(e.what(),
-					   "unset document::element") == 0) {
-					// optional
-				} // check if element type is wrong
-				else if (strcmp(e.what(),
-						"expected element "
-						"type k_document") == 0) {
+				// optional
+				// check if element type is wrong
+				if (strcmp(e.what(), "expected element "
+							 "type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
+					core::reply::wrong_item_type(
 						"discount_type");
 					rep.content.append(reply.c_str(),
 							   reply.size());
@@ -167,8 +158,9 @@ void dbaas::core::create_payment(http::server::reply &rep,
 				// if element doesn't exist in request document
 				if (strcmp(e.what(),
 					   "unset document::element") == 0) {
-					std::string reply = dbaas::database::reply::
-					missing_item_error("expiration_time");
+					std::string reply =
+					core::reply::missing_item_error(
+						"expiration_time");
 					rep.content.append(reply.c_str(),
 							   reply.size());
 				} // check if element type is wrong
@@ -176,7 +168,7 @@ void dbaas::core::create_payment(http::server::reply &rep,
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
+					core::reply::wrong_item_type(
 						"expiration_time");
 					rep.content.append(reply.c_str(),
 							   reply.size());
@@ -197,8 +189,8 @@ void dbaas::core::create_payment(http::server::reply &rep,
 				// if element doesn't exist in request document
 				if (strcmp(e.what(),
 					   "unset document::element") == 0) {
-					std::string reply = dbaas::database::reply::
-					missing_item_error(
+					std::string reply =
+					core::reply::missing_item_error(
 						"request_numbers_per_day");
 					rep.content.append(reply.c_str(),
 							   reply.size());
@@ -207,7 +199,7 @@ void dbaas::core::create_payment(http::server::reply &rep,
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
+					core::reply::wrong_item_type(
 						"request_numbers_per_day");
 					rep.content.append(reply.c_str(),
 							   reply.size());
@@ -226,8 +218,9 @@ void dbaas::core::create_payment(http::server::reply &rep,
 				// if element doesn't exist in request document
 				if (strcmp(e.what(),
 					   "unset document::element") == 0) {
-					std::string reply = dbaas::database::reply::
-					missing_item_error("read_size");
+					std::string reply =
+					core::reply::missing_item_error(
+						"read_size");
 					rep.content.append(reply.c_str(),
 							   reply.size());
 				} // check if element type is wrong
@@ -235,7 +228,7 @@ void dbaas::core::create_payment(http::server::reply &rep,
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
+					core::reply::wrong_item_type(
 						"read_size");
 					rep.content.append(reply.c_str(),
 							   reply.size());
@@ -254,8 +247,9 @@ void dbaas::core::create_payment(http::server::reply &rep,
 				// if element doesn't exist in request document
 				if (strcmp(e.what(),
 					   "unset document::element") == 0) {
-					std::string reply = dbaas::database::reply::
-					missing_item_error("write_size");
+					std::string reply =
+					core::reply::missing_item_error(
+						"write_size");
 					rep.content.append(reply.c_str(),
 							   reply.size());
 				} // check if element type is wrong
@@ -263,7 +257,7 @@ void dbaas::core::create_payment(http::server::reply &rep,
 						"expected element "
 						"type k_document") == 0) {
 					std::string reply =
-					dbaas::database::reply::wrong_item_type(
+					core::reply::wrong_item_type(
 						"write_size");
 					rep.content.append(reply.c_str(),
 							   reply.size());
@@ -283,7 +277,7 @@ void dbaas::core::create_payment(http::server::reply &rep,
 		else {
 			// if request isn't post method
 			std::string reply =
-			dbaas::database::reply::http_error("send post method");
+			core::reply::http_error("send post method");
 
 			// write reply
 			rep.content.append(reply.c_str(), reply.size());
@@ -293,7 +287,7 @@ void dbaas::core::create_payment(http::server::reply &rep,
 
 		// if execption happend in getting values or parsing json
 		std::string reply =
-		dbaas::database::reply::wrong_request_content_type(e.what());
+		core::reply::wrong_request_content_type(e.what());
 
 		// write reply
 		rep.content.append(reply.c_str(), reply.size());

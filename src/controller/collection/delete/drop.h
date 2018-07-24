@@ -6,7 +6,7 @@
 
 #include <string>
 namespace dbaas {
-namespace core {
+namespace controller {
 
 /**
 * @brief drop		: drop collection

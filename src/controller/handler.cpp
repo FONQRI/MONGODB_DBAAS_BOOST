@@ -17,6 +17,8 @@
 #include "collection/update/update_many.h"
 #include "collection/update/update_one.h"
 
+#include "user/update_key.h"
+
 #include <iostream>
 
 /**

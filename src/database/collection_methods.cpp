@@ -1,6 +1,6 @@
 #include "collection_methods.h"
-#include "password.h"
-#include "reply.h"
+#include "core/reply.h"
+#include "security/password.h"
 
 #include <chrono>
 #include <iostream>
@@ -111,12 +111,12 @@ std::string dbaas::database::delete_many(
 		// create cursor bu qyery and options
 		collection.delete_many({query_document}, options);
 
-		return dbaas::database::reply::answer_done();
+		return core::reply::answer_done();
 	}
 	catch (const mongocxx::exception &e) {
 
 		// create json from error
-		return reply::database_error(e.what());
+		return core::reply::database_error(e.what());
 	}
 }
 
@@ -219,12 +219,12 @@ std::string dbaas::database::delete_one(
 		// create cursor bu qyery and options
 		collection.delete_one({query_document}, options);
 
-		return dbaas::database::reply::answer_done();
+		return core::reply::answer_done();
 	}
 	catch (const mongocxx::exception &e) {
 
 		// create json from error
-		return reply::database_error(e.what());
+		return core::reply::database_error(e.what());
 	}
 }
 
@@ -344,12 +344,12 @@ std::string dbaas::database::find_one_and_delete(
 		// create cursor bu qyery and options
 		collection.find_one_and_delete({query_document}, options);
 
-		return dbaas::database::reply::answer_done();
+		return core::reply::answer_done();
 	}
 	catch (const mongocxx::exception &e) {
 
 		// create json from error
-		return reply::database_error(e.what());
+		return core::reply::database_error(e.what());
 	}
 }
 
@@ -412,11 +412,11 @@ std::string dbaas::database::find(
 		reply.append("]");
 
 		// make reply json
-		return dbaas::database::reply::answer(reply);
+		return core::reply::answer(reply);
 	}
 	catch (const mongocxx::exception &e) {
 		// make error json
-		return reply::database_error(e.what());
+		return core::reply::database_error(e.what());
 	}
 }
 
@@ -467,11 +467,11 @@ std::string dbaas::database::find_one(
 		std::string reply = bsoncxx::to_json(cursor.value());
 
 		// make reply json
-		return dbaas::database::reply::answer(reply);
+		return core::reply::answer(reply);
 	}
 	catch (const mongocxx::exception &e) {
 		// create json from error
-		return reply::database_error(e.what());
+		return core::reply::database_error(e.what());
 	}
 }
 
@@ -509,11 +509,11 @@ std::string dbaas::database::count(std::string username,
 		std::string reply{};
 
 		// make reply json
-		return dbaas::database::reply::answer(std::to_string(cursor));
+		return core::reply::answer(std::to_string(cursor));
 	}
 	catch (const mongocxx::exception &e) {
 		// make error json
-		return reply::database_error(e.what());
+		return core::reply::database_error(e.what());
 	}
 }
 
@@ -616,11 +616,11 @@ std::string dbaas::database::insert_many(
 			bypass_document_validation.get());
 		}
 		collection.insert_many(insert_document_array, options);
-		return dbaas::database::reply::answer_done();
+		return core::reply::answer_done();
 	}
 	catch (const mongocxx::exception &e) {
 		// make error json
-		return reply::database_error(e.what());
+		return core::reply::database_error(e.what());
 	}
 }
 
@@ -724,11 +724,11 @@ std::string dbaas::database::insert_one(
 		}
 
 		collection.insert_one(insert_document.view(), options);
-		return dbaas::database::reply::answer_done();
+		return core::reply::answer_done();
 	}
 	catch (const mongocxx::exception &e) {
 		// make error json
-		return reply::database_error(e.what());
+		return core::reply::database_error(e.what());
 	}
 }
 
@@ -857,12 +857,12 @@ std::string dbaas::database::find_one_and_replace(
 		collection.find_one_and_replace({filter_document}, {replacement},
 						options);
 
-		return dbaas::database::reply::answer_done();
+		return core::reply::answer_done();
 	}
 	catch (const mongocxx::exception &e) {
 
 		// create json from error
-		return reply::database_error(e.what());
+		return core::reply::database_error(e.what());
 	}
 }
 
@@ -987,12 +987,12 @@ std::string dbaas::database::find_one_and_update(
 		collection.find_one_and_update({update_document}, {filter_document},
 					   options);
 
-		return dbaas::database::reply::answer_done();
+		return core::reply::answer_done();
 	}
 	catch (const mongocxx::exception &e) {
 
 		// create json from error
-		return reply::database_error(e.what());
+		return core::reply::database_error(e.what());
 	}
 }
 
@@ -1109,12 +1109,12 @@ std::string dbaas::database::update_many(
 		collection.update_many({filter_document}, {update_document},
 				   options);
 
-		return dbaas::database::reply::answer_done();
+		return core::reply::answer_done();
 	}
 	catch (const mongocxx::exception &e) {
 
 		// create json from error
-		return reply::database_error(e.what());
+		return core::reply::database_error(e.what());
 	}
 }
 
@@ -1230,12 +1230,12 @@ std::string dbaas::database::update_one(
 		collection.update_one({filter_document}, {update_document},
 				  options);
 
-		return dbaas::database::reply::answer_done();
+		return core::reply::answer_done();
 	}
 	catch (const mongocxx::exception &e) {
 
 		// create json from error
-		return reply::database_error(e.what());
+		return core::reply::database_error(e.what());
 	}
 }
 
@@ -1257,12 +1257,12 @@ std::string dbaas::database::drop(std::string username,
 		// drop collection
 		collection.drop();
 
-		return dbaas::database::reply::answer_done();
+		return core::reply::answer_done();
 	}
 	catch (const mongocxx::exception &e) {
 
 		// create json from error
-		return reply::database_error(e.what());
+		return core::reply::database_error(e.what());
 	}
 }
 
@@ -1461,12 +1461,12 @@ std::string dbaas::database::create_index(
 		collection.create_index(index_document.view(), options,
 					operation_options);
 
-		return dbaas::database::reply::answer_done();
+		return core::reply::answer_done();
 	}
 	catch (const mongocxx::exception &e) {
 
 		// create json from error
-		return reply::database_error(e.what());
+		return core::reply::database_error(e.what());
 	}
 }
 
@@ -1490,11 +1490,11 @@ std::string dbaas::database::name(std::string username,
 		mongocxx::stdx::string_view cursor = collection.name();
 
 		// make reply json
-		return dbaas::database::reply::answer(cursor.to_string());
+		return core::reply::answer(cursor.to_string());
 	}
 	catch (const mongocxx::exception &e) {
 		// make error json
-		return reply::database_error(e.what());
+		return core::reply::database_error(e.what());
 	}
 }
 
@@ -1524,11 +1524,11 @@ std::string dbaas::database::list_indexes(std::string username,
 		reply.append("]");
 
 		// make reply json
-		return dbaas::database::reply::answer(reply);
+		return core::reply::answer(reply);
 	}
 	catch (const mongocxx::exception &e) {
 		// make error json
-		return reply::database_error(e.what());
+		return core::reply::database_error(e.what());
 	}
 }
 
@@ -1568,11 +1568,11 @@ dbaas::database::distinct(std::string username, std::string database_name,
 		collection.distinct(name_view, {filter_document}, options);
 
 		// make reply json
-		return dbaas::database::reply::answer("cursor.to_string()");
+		return core::reply::answer("cursor.to_string()");
 	}
 	catch (const mongocxx::exception &e) {
 		// make error json
-		return reply::database_error(e.what());
+		return core::reply::database_error(e.what());
 	}
 }
 
@@ -1829,10 +1829,10 @@ std::string dbaas::database::aggregate(
 		reply.append("]");
 
 		// make reply json
-		return dbaas::database::reply::answer(reply);
+		return core::reply::answer(reply);
 	}
 	catch (const mongocxx::exception &e) {
 		// make error json
-		return reply::database_error(e.what());
+		return core::reply::database_error(e.what());
 	}
 }
