@@ -259,7 +259,7 @@ std::string dbaas::database::delete_user(std::string username,
 
 std::string dbaas::database::create_key(
 	std::string username, std::string password, std::string name,
-	std::string database_name, int valid_request_per_day, int valid_read_size,
+	std::string database_name, int valid_requests_number, int valid_read_size,
 	int valid_write_size, std::vector<std::string> access)
 {
 	// reply message
@@ -302,7 +302,7 @@ std::string dbaas::database::create_key(
 		key_document.append(kvp("database_name", database_name));
 		key_document.append(kvp("request_per_day", 0));
 		key_document.append(
-		kvp("valid_request_per_day", valid_request_per_day));
+		kvp("valid_requests_number", valid_requests_number));
 		key_document.append(kvp("valid_read_size", valid_read_size));
 		key_document.append(kvp("valid_write_size", valid_write_size));
 
@@ -347,7 +347,7 @@ std::string dbaas::database::create_key(
 std::string dbaas::database::update_key(
 	std::string username, std::string password, std::string name,
 	optional_string update_name, optional_string database_name,
-	optional_int valid_request_per_day, optional_int request_per_day,
+	optional_int valid_requests_number, optional_int request_per_day,
 	optional_int valid_read_size, optional_int valid_write_size,
 	optional_string_array access)
 {
@@ -402,11 +402,11 @@ std::string dbaas::database::update_key(
 							  database_name.get()))));
 		}
 
-		if (valid_request_per_day.is_initialized()) {
+		if (valid_requests_number.is_initialized()) {
 			update_document.append(
 			kvp("$set",
-				make_document(kvp("keys.$.valid_request_per_day",
-						  valid_request_per_day.get()))));
+				make_document(kvp("keys.$.valid_requests_number",
+						  valid_requests_number.get()))));
 		}
 
 		if (request_per_day.is_initialized()) {

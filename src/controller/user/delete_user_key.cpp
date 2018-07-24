@@ -4,7 +4,7 @@
 // internal
 #include "src/core/reply.h"
 #include "src/database/user_methods.h"
-#include "src/security/password.h"
+#include "src/database/security/password.h"
 
 // boost
 #include <boost/optional.hpp>

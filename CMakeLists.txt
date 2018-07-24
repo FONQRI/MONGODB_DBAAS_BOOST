@@ -17,9 +17,9 @@ file(GLOB coreHeaders ./src/core/*.h)
 file(GLOB coreCpp ./src/core/*.cpp)
 file(GLOB coreHpp ./src/core/*.hpp)
 
-file(GLOB SecurityHeaders ./src/security/*.h)
-file(GLOB SecurityCpp ./src/security/*.cpp)
-file(GLOB SecurityHpp ./src/security/*.hpp)
+file(GLOB SecurityHeaders ./src/database/security/*.h)
+file(GLOB SecurityCpp ./src/database/security/*.cpp)
+file(GLOB SecurityHpp ./src/database/security/*.hpp)
 
 file(GLOB RequestHeaders ./src/controller/*.h)
 file(GLOB RequestCpp ./src/controller/*.cpp)

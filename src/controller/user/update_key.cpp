@@ -4,7 +4,7 @@
 // internal
 #include "src/core/reply.h"
 #include "src/database/user_methods.h"
-#include "src/security/password.h"
+#include "src/database/security/password.h"
 
 // boost
 #include <boost/optional.hpp>
@@ -108,14 +108,10 @@ void dbaas::controller::update_key(http::server::reply &rep,
 			}
 			catch (std::exception &e) {
 
-				// if element doesn't exist in request document
-				if (strcmp(e.what(),
-					   "unset document::element") == 0) {
-					// optional
-				} // check if element type is wrong
-				else if (strcmp(e.what(),
-						"expected element "
-						"type k_document") == 0) {
+				// optional
+				// check if element type is wrong
+				if (strcmp(e.what(), "expected element "
+							 "type k_document") == 0) {
 					std::string reply =
 					core::reply::wrong_item_type(
 						"update_name");
@@ -135,14 +131,10 @@ void dbaas::controller::update_key(http::server::reply &rep,
 			}
 			catch (std::exception &e) {
 
-				// if element doesn't exist in request document
-				if (strcmp(e.what(),
-					   "unset document::element") == 0) {
-					// optional
-				} // check if element type is wrong
-				else if (strcmp(e.what(),
-						"expected element "
-						"type k_document") == 0) {
+				// optional
+				// check if element type is wrong
+				if (strcmp(e.what(), "expected element "
+							 "type k_document") == 0) {
 					std::string reply =
 					core::reply::wrong_item_type(
 						"database_name");
@@ -152,26 +144,22 @@ void dbaas::controller::update_key(http::server::reply &rep,
 				}
 			}
 
-			// valid_request_per_day
-			optional_int valid_request_per_day;
+			// valid_requests_number
+			optional_int valid_requests_number;
 			try {
-				valid_request_per_day =
-				request_document.view()["valid_request_per_day"]
+				valid_requests_number =
+				request_document.view()["valid_requests_number"]
 					.get_int32();
 			}
 			catch (std::exception &e) {
 
-				// if element doesn't exist in request document
-				if (strcmp(e.what(),
-					   "unset document::element") == 0) {
-					// optional
-				} // check if element type is wrong
-				else if (strcmp(e.what(),
-						"expected element "
-						"type k_document") == 0) {
+				// optional
+				// check if element type is wrong
+				if (strcmp(e.what(), "expected element "
+							 "type k_document") == 0) {
 					std::string reply =
 					core::reply::wrong_item_type(
-						"valid_request_per_day");
+						"valid_requests_number");
 					rep.content.append(reply.c_str(),
 							   reply.size());
 					return;
@@ -187,14 +175,10 @@ void dbaas::controller::update_key(http::server::reply &rep,
 			}
 			catch (std::exception &e) {
 
-				// if element doesn't exist in request document
-				if (strcmp(e.what(),
-					   "unset document::element") == 0) {
-					// optional
-				} // check if element type is wrong
-				else if (strcmp(e.what(),
-						"expected element "
-						"type k_document") == 0) {
+				// optional
+				// check if element type is wrong
+				if (strcmp(e.what(), "expected element "
+							 "type k_document") == 0) {
 					std::string reply =
 					core::reply::wrong_item_type(
 						"request_per_day");
@@ -213,14 +197,10 @@ void dbaas::controller::update_key(http::server::reply &rep,
 			}
 			catch (std::exception &e) {
 
-				// if element doesn't exist in request document
-				if (strcmp(e.what(),
-					   "unset document::element") == 0) {
-					// optional
-				} // check if element type is wrong
-				else if (strcmp(e.what(),
-						"expected element "
-						"type k_document") == 0) {
+				// optional
+				// check if element type is wrong
+				if (strcmp(e.what(), "expected element "
+							 "type k_document") == 0) {
 					std::string reply =
 					core::reply::wrong_item_type(
 						"valid_read_size");
@@ -239,14 +219,10 @@ void dbaas::controller::update_key(http::server::reply &rep,
 			}
 			catch (std::exception &e) {
 
-				// if element doesn't exist in request document
-				if (strcmp(e.what(),
-					   "unset document::element") == 0) {
-					// optional
-				} // check if element type is wrong
-				else if (strcmp(e.what(),
-						"expected element "
-						"type k_document") == 0) {
+				// optional
+				// check if element type is wrong
+				if (strcmp(e.what(), "expected element "
+							 "type k_document") == 0) {
 					std::string reply =
 					core::reply::wrong_item_type(
 						"valid_write_size");
@@ -275,14 +251,10 @@ void dbaas::controller::update_key(http::server::reply &rep,
 			}
 			catch (std::exception &e) {
 
-				// if element doesn't exist in request document
-				if (strcmp(e.what(),
-					   "unset document::element") == 0) {
-					// optional
-				} // check if element type is wrong
-				else if (strcmp(e.what(),
-						"expected element "
-						"type k_document") == 0) {
+				// optional
+				// check if element type is wrong
+				if (strcmp(e.what(), "expected element "
+							 "type k_document") == 0) {
 					std::string reply =
 					core::reply::wrong_item_type("access");
 					rep.content.append(reply.c_str(),
@@ -294,7 +266,7 @@ void dbaas::controller::update_key(http::server::reply &rep,
 			// get reply from database
 			auto reply = dbaas::database::update_key(
 			username, password, name, update_name, database_name,
-			valid_request_per_day, request_per_day, valid_read_size,
+			valid_requests_number, request_per_day, valid_read_size,
 			valid_write_size, access);
 
 			// write reply

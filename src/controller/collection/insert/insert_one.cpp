@@ -4,8 +4,9 @@
 // internal
 #include "src/core/reply.h"
 #include "src/core/tools.h"
+#include "src/database/admin_methods.h"
 #include "src/database/collection_methods.h"
-#include "src/security/password.h"
+#include "src/database/security/password.h"
 
 // boost
 #include <boost/optional.hpp>
@@ -28,6 +29,8 @@ void dbaas::controller::insert_one(http::server::reply &rep,
 	http::server::header content_type;
 	content_type.name = "Content-Type";
 	content_type.value = "application/json;";
+
+	//	std::clog << "request.content" << std::endl;
 
 	//	specifying content charset as utf-8
 	http::server::header charset;
@@ -89,11 +92,16 @@ void dbaas::controller::insert_one(http::server::reply &rep,
 				rep.content.append(reply.c_str(), reply.size());
 				return;
 			}
+			//			std::string m_reply;
+			//			bool rs =
+			// dbaas::database::admin::m_check_key(
+			//			username, client_key, m_reply,
+			//__FUNCTION__);
 
 			// get database name and check client_key access
 			std::string database_name{};
 			std::string check_key_reply;
-			if (!dbaas::database::password::check_key(
+			if (!dbaas::database::security::password::check_key(
 				username, client_key, check_key_reply)) {
 				rep.content.append(check_key_reply.c_str(),
 						   check_key_reply.size());
@@ -102,6 +110,22 @@ void dbaas::controller::insert_one(http::server::reply &rep,
 			else {
 				database_name = check_key_reply;
 			}
+
+			// NOTE test
+			//			std::string database_name{};
+			//			std::string check_key_reply;
+			//			if
+			//(!dbaas::database::admin::m_check_key(
+			//				username, client_key,
+			// check_key_reply,
+			//				__FUNCTION__)) {
+			//				rep.content.append(check_key_reply.c_str(),
+			//						   check_key_reply.size());
+			//				return;
+			//			}
+			//			else {
+			//				database_name = check_key_reply;
+			//			}
 
 			// add date and time
 			std::string edited_content;
@@ -175,14 +199,10 @@ void dbaas::controller::insert_one(http::server::reply &rep,
 			}
 			catch (std::exception &e) {
 
-				// if element doesn't exist in request document
-				if (strcmp(e.what(),
-					   "unset document::element") == 0) {
-					// element is optional
-				} // check if element type is wrong
-				else if (strcmp(e.what(),
-						"expected element "
-						"type k_document") == 0) {
+				// element is optional
+				// check if element type is wrong
+				if (strcmp(e.what(), "expected element "
+							 "type k_document") == 0) {
 					std::string reply =
 					core::reply::wrong_item_type(
 						"write_concern");
@@ -220,17 +240,11 @@ void dbaas::controller::insert_one(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
 						core::reply::wrong_item_type(
 							"acknowledge_level");
@@ -249,17 +263,11 @@ void dbaas::controller::insert_one(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
 						core::reply::wrong_item_type(
 							"tag");
@@ -277,17 +285,11 @@ void dbaas::controller::insert_one(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
 						core::reply::wrong_item_type(
 							"journal");
@@ -305,17 +307,11 @@ void dbaas::controller::insert_one(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
 						core::reply::wrong_item_type(
 							"majority");
@@ -333,17 +329,11 @@ void dbaas::controller::insert_one(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
 						core::reply::wrong_item_type(
 							"timeout");
@@ -361,17 +351,11 @@ void dbaas::controller::insert_one(http::server::reply &rep,
 				}
 				catch (std::exception &e) {
 
-					// if element doesn't exist in request
-					// document
+					// element is optional
+					// check if element type is wrong
 					if (strcmp(e.what(),
-						   "unset document::element") ==
-						0) {
-						// element is optional
-					} // check if element type is wrong
-					else if (strcmp(e.what(),
-							"expected element "
-							"type k_document") ==
-						 0) {
+						   "expected element "
+						   "type k_document") == 0) {
 						std::string reply =
 						core::reply::wrong_item_type(
 							"nodes");
@@ -390,14 +374,10 @@ void dbaas::controller::insert_one(http::server::reply &rep,
 			}
 			catch (std::exception &e) {
 
-				// if element doesn't exist in request document
-				if (strcmp(e.what(),
-					   "unset document::element") == 0) {
-					// element is optional
-				} // check if element type is wrong
-				else if (strcmp(e.what(),
-						"expected element "
-						"type k_document") == 0) {
+				// element is optional
+				// check if element type is wrong
+				if (strcmp(e.what(), "expected element "
+							 "type k_document") == 0) {
 					std::string reply =
 					core::reply::wrong_item_type("ordered");
 					rep.content.append(reply.c_str(),
@@ -417,14 +397,10 @@ void dbaas::controller::insert_one(http::server::reply &rep,
 			}
 			catch (std::exception &e) {
 
-				// if element doesn't exist in request document
-				if (strcmp(e.what(),
-					   "unset document::element") == 0) {
-					// element is optional
-				} // check if element type is wrong
-				else if (strcmp(e.what(),
-						"expected element "
-						"type k_document") == 0) {
+				// element is optional
+				// check if element type is wrong
+				if (strcmp(e.what(), "expected element "
+							 "type k_document") == 0) {
 					std::string reply =
 					core::reply::wrong_item_type(
 						"bypass_document_validation");
@@ -453,7 +429,10 @@ void dbaas::controller::insert_one(http::server::reply &rep,
 		}
 	}
 	catch (std::exception &e) {
-
+		//		if (first) {
+		//			std::clog << "reply" << std::endl;
+		//			first = false;
+		//		}
 		// if execption happend in getting values or parsing json
 		std::string reply =
 		core::reply::wrong_request_content_type(e.what());

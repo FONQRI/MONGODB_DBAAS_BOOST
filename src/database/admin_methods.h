@@ -31,10 +31,16 @@ typedef boost::optional<size_t> optional_size;
 namespace dbaas {
 namespace database {
 namespace admin {
-std::string get_user(std::string username);
+// std::string get_user(std::string username);
 
-std::string increase_request_per_day(std::string username, std::string name,
-					 int request_per_day);
+// std::string increase_request(std::string username, std::string name,
+//				 int request_per_day);
+
+bool m_check_key_database(std::string username, std::string key,
+			  std::string &reply, std::string function_name);
+
+bool m_check_key(std::string username, std::string request_key_name,
+		 std::string &reply, std::string function_name);
 }
 } // dbaas
 } // database

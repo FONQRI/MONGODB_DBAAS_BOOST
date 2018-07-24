@@ -58,7 +58,7 @@
 #include "src/database/database_init_values.h"
 
 // TODO remove test code
-#include "src/security/password.h"
+#include "src/database/security/password.h"
 
 /**
  * @brief controller	: a function for controller mapping

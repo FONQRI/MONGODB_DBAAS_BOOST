@@ -4,7 +4,7 @@
 // internal
 #include "src/core/reply.h"
 #include "src/database/user_methods.h"
-#include "src/security/password.h"
+#include "src/database/security/password.h"
 
 // boost
 #include <boost/optional.hpp>
@@ -130,11 +130,11 @@ void dbaas::controller::create_key(http::server::reply &rep,
 				return;
 			}
 
-			// valid_request_per_day
-			int valid_request_per_day;
+			// valid_requests_number
+			int valid_requests_number;
 			try {
-				valid_request_per_day =
-				request_document.view()["valid_request_per_day"]
+				valid_requests_number =
+				request_document.view()["valid_requests_number"]
 					.get_int32();
 			}
 			catch (std::exception &e) {
@@ -144,7 +144,7 @@ void dbaas::controller::create_key(http::server::reply &rep,
 					   "unset document::element") == 0) {
 					std::string reply =
 					core::reply::missing_item_error(
-						"valid_request_per_day");
+						"valid_requests_number");
 					rep.content.append(reply.c_str(),
 							   reply.size());
 				} // check if element type is wrong
@@ -153,7 +153,7 @@ void dbaas::controller::create_key(http::server::reply &rep,
 						"type k_document") == 0) {
 					std::string reply =
 					core::reply::wrong_item_type(
-						"valid_request_per_day");
+						"valid_requests_number");
 					rep.content.append(reply.c_str(),
 							   reply.size());
 				}
@@ -259,7 +259,7 @@ void dbaas::controller::create_key(http::server::reply &rep,
 			// get reply from database
 			auto reply = dbaas::database::create_key(
 			username, password, name, database_name,
-			valid_request_per_day, valid_read_size,
+			valid_requests_number, valid_read_size,
 			valid_write_size, access);
 
 			// write reply

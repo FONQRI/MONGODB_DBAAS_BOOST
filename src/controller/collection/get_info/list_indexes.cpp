@@ -4,7 +4,7 @@
 // internal
 #include "src/core/reply.h"
 #include "src/database/collection_methods.h"
-#include "src/security/password.h"
+#include "src/database/security/password.h"
 
 // boost
 #include <boost/optional.hpp>
@@ -67,7 +67,7 @@ void dbaas::controller::list_indexes(http::server::reply &rep,
 			// get database name and check client_key access
 			std::string database_name{};
 			std::string check_key_reply;
-			if (!dbaas::database::password::check_key(
+			if (!dbaas::database::security::password::check_key(
 				username, client_key, check_key_reply)) {
 				rep.content.append(check_key_reply.c_str(),
 						   check_key_reply.size());

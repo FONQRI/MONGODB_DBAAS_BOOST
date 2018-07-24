@@ -97,7 +97,7 @@ std::string delete_user(std::string username, std::string password);
  * @param username				: username of user
  * @param password				: password of user
  * @param name					: name of key
- * @param valid_request_per_day	: valid request per day for this user
+ * @param valid_requests_number	: valid request per day for this user
  * @param valid_read_size		: valid read size in kb
  * @param valid_write_size		: valid write size in kb
  * @param access				: access array that specifies key access
@@ -109,7 +109,7 @@ std::string delete_user(std::string username, std::string password);
  */
 std::string create_key(std::string username, std::string password,
 			   std::string name, std::string database_name,
-			   int valid_request_per_day, int valid_read_size,
+			   int valid_requests_number, int valid_read_size,
 			   int valid_write_size, std::vector<std::string> access);
 
 /**
@@ -120,7 +120,7 @@ std::string create_key(std::string username, std::string password,
  * @param update_name			: optional new name for key if needs to
  * be
  * update
- * @param valid_request_per_day	: optional valid_request_per_day for key if
+ * @param valid_requests_number	: optional valid_requests_number for key if
  * needs to be update
  * @param request_per_day		: optional request_per_day if needs to
  * be
@@ -141,7 +141,7 @@ std::string create_key(std::string username, std::string password,
 std::string
 update_key(std::string username, std::string password, std::string name,
 	   optional_string update_name, optional_string database_name,
-	   optional_int valid_request_per_day, optional_int request_per_day,
+	   optional_int valid_requests_number, optional_int request_per_day,
 	   optional_int valid_read_size, optional_int valid_write_size,
 	   optional_string_array access);
 
