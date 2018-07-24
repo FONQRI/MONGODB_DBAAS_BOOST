@@ -21,6 +21,8 @@ After installing prerequisites you only need to open project with [Qt creator](h
 ## Deployment
 
 I'm developing this application to help people that want to use only database on server side like game leader boards , application setting storage and etc.
+let me know if you have any problem with this project .
+behnamsabaghi@gmail.com
 
 
 
@@ -31,6 +33,12 @@ I'm developing this application to help people that want to use only database on
 - [x] core
 - [ ] Security
 - [ ] Payments
+- [ ] Statistics
+
+>TODOs
+- [ ] write postman apis
+- [ ] comment mising comments
+- [ ] complete security
 - [ ] Statistics
 
 ## Built With
